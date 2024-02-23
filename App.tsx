@@ -10,6 +10,7 @@ import {
   Dimensions,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import seedrandom from "seedrandom";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
@@ -48,8 +49,59 @@ const Love4NumWidget = () => {
     prepare();
   }, []);
 
-  const generateNumbers = async (gameType) => {
-    setResult(`Résultat pour ${gameType}: 1, 2, 3, 4, 5`);
+  // const generateNumbers = async (gameType) => {
+  //   setResult(`Résultat pour ${gameType}: 1, 2, 3, 4, 5`);
+  // };
+
+  const genererNumerosLoto = (jeu) => {
+    if (!phrase) {
+      alert(
+        "Veuillez entrer une phrase ou des mots d'amour avant de générer des numéros."
+      );
+      return;
+    }
+
+    const seed = [...phrase].reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    seedrandom(seed, { global: true }); // Initialise le générateur de nombres aléatoires
+
+    let numeros;
+    let message;
+    switch (jeu) {
+      case "loto":
+        numeros = Array.from(
+          { length: 5 },
+          () => Math.floor(Math.random() * 49) + 1
+        );
+        const numeroComplementaire = Math.floor(Math.random() * 10) + 1;
+        message = `Vos numéros pour le Loto: ${numeros.join(
+          ", "
+        )} et le numéro complémentaire: ${numeroComplementaire}`;
+        break;
+      case "euromillions":
+        numeros = Array.from(
+          { length: 5 },
+          () => Math.floor(Math.random() * 50) + 1
+        );
+        const etoiles = Array.from(
+          { length: 2 },
+          () => Math.floor(Math.random() * 12) + 1
+        );
+        message = `Vos numéros pour l'Euromillions: ${numeros.join(
+          ", "
+        )} et les étoiles: ${etoiles.join(", ")}`;
+        break;
+      case "eurodreams":
+        numeros = Array.from(
+          { length: 6 },
+          () => Math.floor(Math.random() * 40) + 1
+        );
+        const numeroDream = Math.floor(Math.random() * 5) + 1;
+        message = `Vos numéros pour l'Eurodreams: ${numeros.join(
+          ", "
+        )} et le numéro Dream: ${numeroDream}`;
+        break;
+    }
+    setResult(message); // Met à jour l'état `result` avec le message généré
   };
 
   if (!isReady) {
@@ -77,16 +129,29 @@ const Love4NumWidget = () => {
         />
         <Text style={styles.instruction}>Choisissez le tirage :</Text>
         <View style={styles.gameSelection}>
-          {["Loto", "Euromillions", "Eurodreams"].map((game) => (
-            <TouchableOpacity
-              key={game}
-              style={styles.gameOption}
-              onPress={() => generateNumbers(game)}
-            >
-              <Text style={styles.gameLabel}>{game}</Text>
-            </TouchableOpacity>
-          ))}
+          <TouchableOpacity
+            key="loto"
+            style={styles.gameOption}
+            onPress={() => genererNumerosLoto("loto")}
+          >
+            <Text style={styles.gameLabel}>Loto</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            key="euromillions"
+            style={styles.gameOption}
+            onPress={() => genererNumerosLoto("euromillions")}
+          >
+            <Text style={styles.gameLabel}>Euromillions</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            key="eurodreams"
+            style={styles.gameOption}
+            onPress={() => genererNumerosLoto("eurodreams")}
+          >
+            <Text style={styles.gameLabel}>Eurodreams</Text>
+          </TouchableOpacity>
         </View>
+
         {result && <Text style={styles.result}>{result}</Text>}
       </View>
     </ScrollView>
@@ -105,6 +170,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     minHeight: height,
     //padding: 20,
+    paddingTop: 10,
   },
 
   image: {
