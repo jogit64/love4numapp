@@ -29,6 +29,13 @@ const Love4NumWidget = () => {
   const [phrase, setPhrase] = useState("");
   const [result, setResult] = useState("");
 
+  const GameSelector = ({ onPress, imageSource, label }) => (
+    <TouchableOpacity onPress={onPress} style={{ alignItems: "center" }}>
+      <Image source={imageSource} style={styles.gameImage} />
+      <Text style={styles.gameLabel}>{label}</Text>
+    </TouchableOpacity>
+  );
+
   useEffect(() => {
     async function prepare() {
       console.log("Préparation de l'application...");
@@ -263,21 +270,27 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderWidth: 1,
   },
-  // gameOption: {
-  //   backgroundColor: "#00E676", // Vert néon pour les boutons
-  //   padding: 10,
-  //   borderRadius: 20,
-  //   shadowColor: "#000",
-  //   shadowOffset: { width: 0, height: 2 },
-  //   shadowOpacity: 0.23,
-  //   shadowRadius: 2.62,
-  //   elevation: 4,
-  // },
-  // gameLabel: {
-  //   color: "#FFF",
-  //   fontSize: 16,
-  // },
+  gameOption: {
+    backgroundColor: "#00E676", // Vert néon pour les boutons
+    padding: 10,
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    elevation: 4,
+  },
 
+  gameImage: {
+    width: 100, // Ajustez selon la taille désirée
+    height: 100, // Ajustez selon la taille désirée
+    resizeMode: "contain", // 'cover' pour remplir, 'contain' pour s'adapter sans tronquer
+  },
+
+  gameLabel: {
+    color: "#FFF",
+    fontSize: 16,
+  },
   result: {
     marginTop: 20,
     fontSize: 18,
