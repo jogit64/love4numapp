@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
 
   gameLabel: {
     color: "#FFF",
-    fontSize: 16,
+    fontSize: 18,
   },
   result: {
     marginTop: 20,
