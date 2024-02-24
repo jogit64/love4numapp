@@ -21,6 +21,13 @@ const Love4NumWidget = () => {
   const [phrase, setPhrase] = useState("");
   const [result, setResult] = useState("");
 
+  const GameSelector = ({ onPress, imageSource, label }) => (
+    <TouchableOpacity onPress={onPress} style={{ alignItems: "center" }}>
+      <Image source={imageSource} style={styles.gameImage} />
+      <Text style={styles.gameLabel}>{label}</Text>
+    </TouchableOpacity>
+  );
+
   useEffect(() => {
     async function prepare() {
       console.log("Préparation de l'application...");
@@ -129,27 +136,21 @@ const Love4NumWidget = () => {
         />
         <Text style={styles.instruction}>Choisissez le tirage :</Text>
         <View style={styles.gameSelection}>
-          <TouchableOpacity
-            key="loto"
-            style={styles.gameOption}
+          <GameSelector
             onPress={() => genererNumerosLoto("loto")}
-          >
-            <Text style={styles.gameLabel}>Loto</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            key="euromillions"
-            style={styles.gameOption}
+            imageSource={require("./assets/loto.png")}
+            label="Loto"
+          />
+          <GameSelector
             onPress={() => genererNumerosLoto("euromillions")}
-          >
-            <Text style={styles.gameLabel}>Euromillions</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            key="eurodreams"
-            style={styles.gameOption}
+            imageSource={require("./assets/euromillions.png")}
+            label="Euromillions"
+          />
+          <GameSelector
             onPress={() => genererNumerosLoto("eurodreams")}
-          >
-            <Text style={styles.gameLabel}>Eurodreams</Text>
-          </TouchableOpacity>
+            imageSource={require("./assets/dreams.png")}
+            label="Eurodreams"
+          />
         </View>
 
         {result && <Text style={styles.result}>{result}</Text>}
@@ -219,6 +220,13 @@ const styles = StyleSheet.create({
     shadowRadius: 2.62,
     elevation: 4,
   },
+
+  gameImage: {
+    width: 100, // Ajustez selon la taille désirée
+    height: 100, // Ajustez selon la taille désirée
+    resizeMode: "contain", // 'cover' pour remplir, 'contain' pour s'adapter sans tronquer
+  },
+
   gameLabel: {
     color: "#FFF",
     fontSize: 16,
