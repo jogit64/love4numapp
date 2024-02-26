@@ -91,6 +91,14 @@ const Love4NumWidget = () => {
   //   setResult(`Résultat pour ${gameType}: 1, 2, 3, 4, 5`);
   // };
 
+  const genererNumerosUniques = (debut, fin, count) => {
+    let numeros = new Set();
+    while (numeros.size < count) {
+      numeros.add(Math.floor(Math.random() * (fin - debut + 1)) + debut);
+    }
+    return [...numeros];
+  };
+
   const genererNumerosLoto = (jeu) => {
     if (!phrase) {
       alert(
@@ -100,36 +108,24 @@ const Love4NumWidget = () => {
     }
 
     const seed = [...phrase].reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    seedrandom(seed, { global: true }); // Initialise le générateur de nombres aléatoires
+    seedrandom(seed, { global: true }); // Réinitialise le générateur avec la graine pour reproductibilité
 
     switch (jeu) {
       case "loto":
-        const numerosLoto = Array.from(
-          { length: 5 },
-          () => Math.floor(Math.random() * 49) + 1
-        );
-        const numeroComplementaireLoto = Math.floor(Math.random() * 10) + 1;
+        const numerosLoto = genererNumerosUniques(1, 49, 5);
+        const numeroComplementaireLoto = Math.floor(Math.random() * 10) + 1; // Un seul numéro complémentaire, doublon autorisé
         setLotoNumbers(numerosLoto);
         setLotoComplementaire(numeroComplementaireLoto);
         break;
       case "euromillions":
-        const numerosEuromillions = Array.from(
-          { length: 5 },
-          () => Math.floor(Math.random() * 50) + 1
-        );
-        const etoilesEuromillions = Array.from(
-          { length: 2 },
-          () => Math.floor(Math.random() * 12) + 1
-        );
+        const numerosEuromillions = genererNumerosUniques(1, 50, 5);
+        const etoilesEuromillions = genererNumerosUniques(1, 12, 2); // Correction: les étoiles sont entre 1 et 12
         setEuromillionsNumbers(numerosEuromillions);
         setEuromillionsEtoiles(etoilesEuromillions);
         break;
       case "eurodreams":
-        const numerosEurodreams = Array.from(
-          { length: 6 },
-          () => Math.floor(Math.random() * 40) + 1
-        );
-        const numeroDreamEurodreams = Math.floor(Math.random() * 5) + 1;
+        const numerosEurodreams = genererNumerosUniques(1, 40, 6);
+        const numeroDreamEurodreams = Math.floor(Math.random() * 5) + 1; // Un seul numéro complémentaire, doublon autorisé
         setEurodreamsNumbers(numerosEurodreams);
         setEurodreamsDream(numeroDreamEurodreams);
         break;
