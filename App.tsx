@@ -99,6 +99,8 @@ const Love4NumWidget = () => {
     return [...numeros];
   };
 
+  const NOMBRE_D_OR = 1.618033988749895;
+
   const genererNumerosLoto = (jeu) => {
     if (!phrase) {
       alert(
@@ -107,25 +109,34 @@ const Love4NumWidget = () => {
       return;
     }
 
-    const seed = [...phrase].reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    seedrandom(seed, { global: true }); // Réinitialise le générateur avec la graine pour reproductibilité
+    // Convertit la phrase en une graine basée sur la somme des codes de caractères
+    const seedBase = [...phrase].reduce(
+      (acc, char) => acc + char.charCodeAt(0),
+      0
+    );
+
+    // Ajuste la graine en utilisant le nombre d'or
+    const seedAjustee = (seedBase * NOMBRE_D_OR) % 1; // Utilise le reste de la division pour garder un nombre entre 0 et 1
 
     switch (jeu) {
       case "loto":
+        seedrandom(seedAjustee, { global: true });
         const numerosLoto = genererNumerosUniques(1, 49, 5);
-        const numeroComplementaireLoto = Math.floor(Math.random() * 10) + 1; // Un seul numéro complémentaire, doublon autorisé
+        const numeroComplementaireLoto = Math.floor(Math.random() * 10) + 1;
         setLotoNumbers(numerosLoto);
         setLotoComplementaire(numeroComplementaireLoto);
         break;
       case "euromillions":
+        seedrandom(seedAjustee, { global: true });
         const numerosEuromillions = genererNumerosUniques(1, 50, 5);
-        const etoilesEuromillions = genererNumerosUniques(1, 12, 2); // Correction: les étoiles sont entre 1 et 12
+        const etoilesEuromillions = genererNumerosUniques(1, 12, 2);
         setEuromillionsNumbers(numerosEuromillions);
         setEuromillionsEtoiles(etoilesEuromillions);
         break;
       case "eurodreams":
+        seedrandom(seedAjustee, { global: true });
         const numerosEurodreams = genererNumerosUniques(1, 40, 6);
-        const numeroDreamEurodreams = Math.floor(Math.random() * 5) + 1; // Un seul numéro complémentaire, doublon autorisé
+        const numeroDreamEurodreams = Math.floor(Math.random() * 5) + 1;
         setEurodreamsNumbers(numerosEurodreams);
         setEurodreamsDream(numeroDreamEurodreams);
         break;
