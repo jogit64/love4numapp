@@ -20,6 +20,7 @@ const Love4NumWidget = () => {
   const [isReady, setIsReady] = useState(false);
   const [phrase, setPhrase] = useState("");
   const [result, setResult] = useState("");
+  const [jeuSelectionne, setJeuSelectionne] = useState<string | null>(null);
 
   // const GameSelector = ({ onPress, imageSource, label }) => (
   //   <TouchableOpacity onPress={onPress} style={{ alignItems: "center" }}>
@@ -28,8 +29,17 @@ const Love4NumWidget = () => {
   //   </TouchableOpacity>
   // );
 
-  const GameSelector = ({ onPress, imageSource, label, style }) => (
-    <TouchableOpacity onPress={onPress} style={[styles.gameSelector, style]}>
+  const GameSelector = ({ onPress, imageSource, label, jeuId }) => (
+    <TouchableOpacity
+      onPress={() => {
+        setJeuSelectionne(jeuId);
+        onPress();
+      }}
+      style={[
+        styles.gameSelector,
+        jeuSelectionne === jeuId ? styles.selectedGame : styles.unselectedGame,
+      ]}
+    >
       <Image source={imageSource} style={styles.gameImage} />
       <Text style={styles.gameLabel}>{label}</Text>
     </TouchableOpacity>
@@ -149,16 +159,19 @@ const Love4NumWidget = () => {
             onPress={() => genererNumerosLoto("loto")}
             imageSource={require("./assets/loto.png")}
             label="Loto"
+            jeuId="loto" // Identifiant unique pour le jeu
           />
           <GameSelector
             onPress={() => genererNumerosLoto("euromillions")}
             imageSource={require("./assets/euromillions.png")}
             label="Euromillions"
+            jeuId="euromillions" // Identifiant unique pour le jeu
           />
           <GameSelector
             onPress={() => genererNumerosLoto("eurodreams")}
             imageSource={require("./assets/dreams.png")}
             label="Eurodreams"
+            jeuId="eurodreams" // Identifiant unique pour le jeu
           />
         </View>
 
@@ -222,7 +235,7 @@ const styles = StyleSheet.create({
   gameSelector: {
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#00E676",
+    //backgroundColor: "#00E676",
     //padding: 10,
     paddingHorizontal: 6,
     borderRadius: 15,
@@ -245,6 +258,16 @@ const styles = StyleSheet.create({
     color: "#FFEB3B",
     fontWeight: "bold",
     padding: 10,
+  },
+
+  selectedGame: {
+    backgroundColor: "#ADD8E6", // Bleu clair pour le jeu sélectionné
+    // Autres styles nécessaires pour un jeu sélectionné
+  },
+
+  unselectedGame: {
+    backgroundColor: "#00E676", // Vert (ou tout autre couleur de votre choix) pour les jeux non sélectionnés
+    // Autres styles nécessaires pour un jeu non sélectionné
   },
 });
 
