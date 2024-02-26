@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     fontFamily: "HennyPennyRegular",
     //fontFamily: "LuckiestGuyRegular",
     fontWeight: "bold",
-    color: "#FFEB3B", // Jaune néon pour le contraste
+    color: "#FFEB3B",
     textAlign: "center",
     marginBottom: 20,
     marginTop: 10,
@@ -205,11 +205,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: "#e0b0ff",
     borderRadius: 25,
-    backgroundColor: "#3d1961", // Fond blanc pour faire ressortir l'input
-    //borderColor: "#781ea6",
-
-    // borderWidth: 1,
-    //borderBottomWidth: 1,
+    backgroundColor: "#3d1961",
     textAlign: "center",
   },
   instruction: {
@@ -218,62 +214,35 @@ const styles = StyleSheet.create({
   },
   gameSelection: {
     flexDirection: "row",
-    //justifyContent: "space-around",
     justifyContent: "space-evenly",
     width: "100%",
-    //marginBottom: 20,
-    //backgroundColor: "#00E676",
     height: 80,
   },
-  // gameOption: {
-  //   backgroundColor: "#00E676", // Vert néon pour les boutons
-  //   padding: 10,
-  //   borderRadius: 20,
-  //   shadowColor: "#000",
-  //   shadowOffset: { width: 0, height: 2 },
-  //   shadowOpacity: 0.23,
-  //   shadowRadius: 2.62,
-  //   elevation: 4,
-  // },
 
   gameSelector: {
     alignItems: "center",
-    //justifyContent: "space-around",
     justifyContent: "center",
     backgroundColor: "#00E676",
-
-    //backgroundColor: "#000",
     //padding: 10,
-
     paddingHorizontal: 6,
     borderRadius: 15,
-    //shadowColor: "#000",
-    //shadowOffset: { width: 0, height: 2 },
-    // shadowOpacity: 0.23,
-    // shadowRadius: 2.62,
-    // elevation: 4,
-    //height: 120, // Exemple de hauteur explicite, ajustez selon vos besoins
   },
 
   gameImage: {
     width: 100,
     height: 55,
     resizeMode: "contain",
-    // borderWidth: 2,
-    // borderColor: "#fff",
-    //marginBottom: -25,
   },
 
   gameLabel: {
     color: "#0F052C",
     fontSize: 12,
-    //marginTop: -10,
   },
 
   result: {
     marginTop: 20,
     fontSize: 18,
-    color: "#FFEB3B", // Utilisation du jaune néon pour les résultats
+    color: "#FFEB3B",
     fontWeight: "bold",
     padding: 10,
   },
