@@ -8,7 +8,6 @@ import {
   ScrollView,
   Image,
   Dimensions,
-  ImageBackground,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import seedrandom from "seedrandom";
@@ -17,20 +16,20 @@ import * as SplashScreen from "expo-splash-screen";
 
 const { width, height } = Dimensions.get("window");
 
-const GameSelector = ({ onPress, imageSource, label }) => (
-  <TouchableOpacity onPress={onPress} style={{ alignItems: "center" }}>
-    <Image source={imageSource} style={styles.gameImage} />
-    <Text style={styles.gameLabel}>{label}</Text>
-  </TouchableOpacity>
-);
-
 const Love4NumWidget = () => {
   const [isReady, setIsReady] = useState(false);
   const [phrase, setPhrase] = useState("");
   const [result, setResult] = useState("");
 
-  const GameSelector = ({ onPress, imageSource, label }) => (
-    <TouchableOpacity onPress={onPress} style={{ alignItems: "center" }}>
+  // const GameSelector = ({ onPress, imageSource, label }) => (
+  //   <TouchableOpacity onPress={onPress} style={{ alignItems: "center" }}>
+  //     <Image source={imageSource} style={styles.gameImage} />
+  //     <Text style={styles.gameLabel}>{label}</Text>
+  //   </TouchableOpacity>
+  // );
+
+  const GameSelector = ({ onPress, imageSource, label, style }) => (
+    <TouchableOpacity onPress={onPress} style={[styles.gameSelector, style]}>
       <Image source={imageSource} style={styles.gameImage} />
       <Text style={styles.gameLabel}>{label}</Text>
     </TouchableOpacity>
@@ -116,20 +115,7 @@ const Love4NumWidget = () => {
         )} et le numéro Dream: ${numeroDream}`;
         break;
     }
-    //  setResult(message); // Met à jour l'état `result` avec le message généré
-    // setResult({
-    //   numeros: [1, 2, 3, 4, 5],
-    //   typeNumeros: "lotoNumeros",
-    //   etoiles: [11, 12],
-    // });
-
-    setResult({
-      jeu,
-      numeros: numeros, // les numéros principaux
-      numeroComplementaire: jeu === "loto" ? numeroComplementaire : undefined, // spécifique au Loto
-      etoiles: jeu === "euromillions" ? etoiles : undefined, // spécifique à l'Euromillions
-      numeroDream: jeu === "eurodreams" ? numeroDream : undefined, // spécifique à l'Eurodreams
-    });
+    setResult(message); // Met à jour l'état `result` avec le message généré
   };
 
   if (!isReady) {
@@ -141,7 +127,7 @@ const Love4NumWidget = () => {
       <StatusBar style="light" />
       <View style={styles.content}>
         <Image
-          source={require("./assets/logo_love4num_1.png")}
+          source={require("./assets/love4nul_log3.png")}
           style={styles.image}
           resizeMode="cover" // ou "contain", "stretch", "repeat", "center"
         />
@@ -149,13 +135,11 @@ const Love4NumWidget = () => {
         <Text style={styles.title}>
           Transformez votre amour en numéros de chance
         </Text>
-        <Text style={styles.instruction}>
-          Entrez une phrase ou des mots d'amour pour voir comment l'univers
-          transforme votre message en numéros de chance.
-        </Text>
         <TextInput
           style={styles.input}
           placeholder="Entrez votre phrase positive"
+          placeholderTextColor="#e0b0ff"
+          cursorColor={"#e0b0ff"}
           value={phrase}
           onChangeText={setPhrase}
         />
@@ -178,36 +162,7 @@ const Love4NumWidget = () => {
           />
         </View>
 
-        <View
-          style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            margin: 10,
-          }}
-        >
-          {result.numeros &&
-            result.numeros.map((numero, index) => (
-              <Text
-                key={index}
-                style={[styles.numeros, styles[result.typeNumeros]]}
-              >
-                {numero}
-              </Text>
-            ))}
-          {result.etoiles &&
-            result.etoiles.map((etoile, index) => (
-              <ImageBackground
-                key={index}
-                source={require("./assets/etoile5.png")}
-                style={[styles.numeros, styles.euromillionsEtoiles]}
-              >
-                <Text style={{ color: "#fff", fontWeight: "bold" }}>
-                  {etoile}
-                </Text>
-              </ImageBackground>
-            ))}
-        </View>
+        {result && <Text style={styles.result}>{result}</Text>}
       </View>
     </ScrollView>
   );
@@ -217,7 +172,7 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     //backgroundColor: "#fb21ff", // Un fond violet vif pour l'énergie
-    backgroundColor: "#22072d", // Un fond violet vif pour l'énergie
+    backgroundColor: "#0F052C", // Un fond violet vif pour l'énergie
   },
   content: {
     flexGrow: 1,
@@ -225,12 +180,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     minHeight: height,
     //padding: 20,
-    paddingTop: 25,
+    paddingTop: 10,
   },
 
   image: {
     width: width, // largeur moins les marges
-    height: height * 0.38, // 30% de la hauteur de l'écran
+    height: height * 0.4, // 30% de la hauteur de l'écran
     // Autres styles...
   },
 
@@ -248,107 +203,79 @@ const styles = StyleSheet.create({
     width: width - 40,
     padding: 10,
     marginBottom: 20,
-    //borderRadius: 25,
-    //backgroundColor: "#FFF", // Fond blanc pour faire ressortir l'input
-    backgroundColor: "#571373", // Fond blanc pour faire ressortir l'input
-    borderColor: "#BDBDBD",
-    color: "#fff",
-    //borderWidth: 1,
-    borderBottomWidth: 1,
-    textAlign: "left",
-  },
+    color: "#e0b0ff",
+    borderRadius: 25,
+    backgroundColor: "#3d1961", // Fond blanc pour faire ressortir l'input
+    //borderColor: "#781ea6",
 
+    // borderWidth: 1,
+    //borderBottomWidth: 1,
+    textAlign: "center",
+  },
   instruction: {
     color: "#FFF",
     marginBottom: 20,
   },
-
   gameSelection: {
     flexDirection: "row",
-    justifyContent: "space-around",
+    //justifyContent: "space-around",
+    justifyContent: "space-evenly",
     width: "100%",
-    marginBottom: 20,
-    borderWidth: 1,
+    //marginBottom: 20,
+    //backgroundColor: "#00E676",
+    height: 80,
   },
-  gameOption: {
-    backgroundColor: "#00E676", // Vert néon pour les boutons
-    padding: 10,
-    borderRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4,
+  // gameOption: {
+  //   backgroundColor: "#00E676", // Vert néon pour les boutons
+  //   padding: 10,
+  //   borderRadius: 20,
+  //   shadowColor: "#000",
+  //   shadowOffset: { width: 0, height: 2 },
+  //   shadowOpacity: 0.23,
+  //   shadowRadius: 2.62,
+  //   elevation: 4,
+  // },
+
+  gameSelector: {
+    alignItems: "center",
+    //justifyContent: "space-around",
+    justifyContent: "center",
+    backgroundColor: "#00E676",
+
+    //backgroundColor: "#000",
+    //padding: 10,
+
+    paddingHorizontal: 6,
+    borderRadius: 15,
+    //shadowColor: "#000",
+    //shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 0.23,
+    // shadowRadius: 2.62,
+    // elevation: 4,
+    //height: 120, // Exemple de hauteur explicite, ajustez selon vos besoins
   },
 
   gameImage: {
-    width: 100, // Ajustez selon la taille désirée
-    height: 100, // Ajustez selon la taille désirée
-    resizeMode: "contain", // 'cover' pour remplir, 'contain' pour s'adapter sans tronquer
+    width: 100,
+    height: 55,
+    resizeMode: "contain",
+    // borderWidth: 2,
+    // borderColor: "#fff",
+    //marginBottom: -25,
   },
 
   gameLabel: {
-    color: "#FFF",
-    fontSize: 18,
+    color: "#0F052C",
+    fontSize: 12,
+    //marginTop: -10,
   },
+
   result: {
     marginTop: 20,
     fontSize: 18,
     color: "#FFEB3B", // Utilisation du jaune néon pour les résultats
     fontWeight: "bold",
     padding: 10,
-  },
-
-  gameImage: {
-    width: 100, // Ajustez selon la taille désirée
-    height: 100, // Ajustez selon la taille désirée
-    resizeMode: "contain", // 'cover' pour remplir, 'contain' pour s'adapter sans tronquer
-  },
-
-  numeros: {
-    color: "#ffffff",
-    borderRadius: 20, // Pour un cercle parfait, assurez-vous que width et height sont égaux
-    padding: 10,
-    margin: 5,
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
-    width: 40,
-    height: 40,
-    lineHeight: 20,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  // Styles spécifiques pour Loto
-  lotoNumeros: {
-    backgroundColor: "#00a2d9",
-  },
-  lotoComplementaire: {
-    backgroundColor: "#ea3946",
-  },
-  // Styles spécifiques pour Euromillions
-  euromillionsNumeros: {
-    backgroundColor: "#001367",
-  },
-  euromillionsEtoiles: {
-    // Pour les étoiles, vous pouvez utiliser un composant Image ou une vue avec une image de fond
-    width: 40,
-    height: 40,
-    backgroundImage: "url(./assets/etoile5.png)", // Exemple, à ajuster selon React Native
-  },
-  // Styles spécifiques pour Eurodreams
-  eurodreamsNumeros: {
-    backgroundColor: "#781ea6",
-  },
-  eurodreamsDream: {
-    backgroundColor: "#ff3c69",
-  },
-
-  gameLabel: {
-    marginTop: 8, // Ajustez l'espacement selon vos besoins
-    color: "#FFF", // Choisissez une couleur qui correspond à votre thème
-    fontSize: 16, // Ajustez la taille de police selon vos besoins
-    textAlign: "center", // Assurez-vous que le texte est centré sous l'image
   },
 });
 
