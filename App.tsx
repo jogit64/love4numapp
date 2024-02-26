@@ -22,12 +22,14 @@ const Love4NumWidget = () => {
   const [result, setResult] = useState("");
   const [jeuSelectionne, setJeuSelectionne] = useState<string | null>(null);
 
-  // const GameSelector = ({ onPress, imageSource, label }) => (
-  //   <TouchableOpacity onPress={onPress} style={{ alignItems: "center" }}>
-  //     <Image source={imageSource} style={styles.gameImage} />
-  //     <Text style={styles.gameLabel}>{label}</Text>
-  //   </TouchableOpacity>
-  // );
+  const [lotoNumbers, setLotoNumbers] = useState([]);
+  const [lotoComplementaire, setLotoComplementaire] = useState(null);
+
+  const [euromillionsNumbers, setEuromillionsNumbers] = useState([]);
+  const [euromillionsEtoiles, setEuromillionsEtoiles] = useState([]);
+
+  const [eurodreamsNumbers, setEurodreamsNumbers] = useState([]);
+  const [eurodreamsDream, setEurodreamsDream] = useState(null);
 
   const GameSelector = ({ onPress, imageSource, label, jeuId }) => (
     <TouchableOpacity
@@ -44,6 +46,18 @@ const Love4NumWidget = () => {
       <Text style={styles.gameLabel}>{label}</Text>
     </TouchableOpacity>
   );
+
+  const EtoileEuromillions = ({ numero }) => {
+    return (
+      <View style={styles.etoileContainer}>
+        <Image
+          source={require("./assets/etoile5.png")}
+          style={styles.etoileBackground}
+        />
+        <Text style={styles.etoileNumero}>{numero}</Text>
+      </View>
+    );
+  };
 
   useEffect(() => {
     async function prepare() {
@@ -88,44 +102,38 @@ const Love4NumWidget = () => {
     const seed = [...phrase].reduce((acc, char) => acc + char.charCodeAt(0), 0);
     seedrandom(seed, { global: true }); // Initialise le générateur de nombres aléatoires
 
-    let numeros;
-    let message;
     switch (jeu) {
       case "loto":
-        numeros = Array.from(
+        const numerosLoto = Array.from(
           { length: 5 },
           () => Math.floor(Math.random() * 49) + 1
         );
-        const numeroComplementaire = Math.floor(Math.random() * 10) + 1;
-        message = `Vos numéros pour le Loto: ${numeros.join(
-          ", "
-        )} et le numéro complémentaire: ${numeroComplementaire}`;
+        const numeroComplementaireLoto = Math.floor(Math.random() * 10) + 1;
+        setLotoNumbers(numerosLoto);
+        setLotoComplementaire(numeroComplementaireLoto);
         break;
       case "euromillions":
-        numeros = Array.from(
+        const numerosEuromillions = Array.from(
           { length: 5 },
           () => Math.floor(Math.random() * 50) + 1
         );
-        const etoiles = Array.from(
+        const etoilesEuromillions = Array.from(
           { length: 2 },
           () => Math.floor(Math.random() * 12) + 1
         );
-        message = `Vos numéros pour l'Euromillions: ${numeros.join(
-          ", "
-        )} et les étoiles: ${etoiles.join(", ")}`;
+        setEuromillionsNumbers(numerosEuromillions);
+        setEuromillionsEtoiles(etoilesEuromillions);
         break;
       case "eurodreams":
-        numeros = Array.from(
+        const numerosEurodreams = Array.from(
           { length: 6 },
           () => Math.floor(Math.random() * 40) + 1
         );
-        const numeroDream = Math.floor(Math.random() * 5) + 1;
-        message = `Vos numéros pour l'Eurodreams: ${numeros.join(
-          ", "
-        )} et le numéro Dream: ${numeroDream}`;
+        const numeroDreamEurodreams = Math.floor(Math.random() * 5) + 1;
+        setEurodreamsNumbers(numerosEurodreams);
+        setEurodreamsDream(numeroDreamEurodreams);
         break;
     }
-    setResult(message); // Met à jour l'état `result` avec le message généré
   };
 
   if (!isReady) {
@@ -175,7 +183,72 @@ const Love4NumWidget = () => {
           />
         </View>
 
-        {result && <Text style={styles.result}>{result}</Text>}
+        {/* {result && <Text style={styles.result}>{result}</Text>} */}
+
+        {/* Affichage conditionnel en fonction du jeu sélectionné */}
+        {jeuSelectionne === "loto" && (
+          <View style={{ alignItems: "center", marginTop: 20 }}>
+            <Text
+              style={{ color: "#FFEB3B", fontSize: 18, fontWeight: "bold" }}
+            >
+              Vos numéros pour le Loto
+            </Text>
+            <View style={{ flexDirection: "row", marginTop: 10 }}>
+              {lotoNumbers.map((num, index) => (
+                <View key={index} style={styles.lotoNumeros}>
+                  <Text style={{ color: "#ffffff" }}>{num}</Text>
+                </View>
+              ))}
+              {lotoComplementaire && (
+                <View style={styles.lotoComplementaire}>
+                  <Text style={{ color: "#ffffff" }}>{lotoComplementaire}</Text>
+                </View>
+              )}
+            </View>
+          </View>
+        )}
+
+        {jeuSelectionne === "euromillions" && (
+          <View style={{ alignItems: "center", marginTop: 20 }}>
+            <Text
+              style={{ color: "#FFEB3B", fontSize: 18, fontWeight: "bold" }}
+            >
+              Vos numéros pour l'Euromillions
+            </Text>
+            <View style={{ flexDirection: "row", marginTop: 10 }}>
+              {euromillionsNumbers.map((num, index) => (
+                <View key={index} style={styles.euromillionsNumeros}>
+                  <Text style={{ color: "#ffffff" }}>{num}</Text>
+                </View>
+              ))}
+              {euromillionsEtoiles.map((etoile, index) => (
+                <EtoileEuromillions key={index} numero={etoile} />
+              ))}
+            </View>
+          </View>
+        )}
+
+        {jeuSelectionne === "eurodreams" && (
+          <View style={{ alignItems: "center", marginTop: 20 }}>
+            <Text
+              style={{ color: "#FFEB3B", fontSize: 18, fontWeight: "bold" }}
+            >
+              Vos numéros pour l'Eurodreams
+            </Text>
+            <View style={{ flexDirection: "row", marginTop: 10 }}>
+              {eurodreamsNumbers.map((num, index) => (
+                <View key={index} style={styles.eurodreamsNumeros}>
+                  <Text style={{ color: "#ffffff" }}>{num}</Text>
+                </View>
+              ))}
+              {eurodreamsDream && (
+                <View style={styles.eurodreamsDream}>
+                  <Text style={{ color: "#ffffff" }}>{eurodreamsDream}</Text>
+                </View>
+              )}
+            </View>
+          </View>
+        )}
       </View>
     </ScrollView>
   );
@@ -268,6 +341,99 @@ const styles = StyleSheet.create({
   unselectedGame: {
     backgroundColor: "#00E676", // Vert (ou tout autre couleur de votre choix) pour les jeux non sélectionnés
     // Autres styles nécessaires pour un jeu non sélectionné
+  },
+
+  lotoNumeros: {
+    backgroundColor: "#00a2d9", // --loto-bg-color
+    color: "#ffffff",
+    borderRadius: 20, // Pour obtenir un cercle parfait, assurez-vous que width et height sont égaux et borderRadius est la moitié
+    padding: 10,
+    margin: 5,
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  lotoComplementaire: {
+    backgroundColor: "#ea3946", // --loto-complementary-bg-color
+    color: "#ffffff",
+    borderRadius: 20,
+    padding: 10,
+    margin: 5,
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  // Styles pour les numéros de l'Euromillions
+  euromillionsNumeros: {
+    backgroundColor: "#001367", // --euromillions-bg-color
+    color: "#ffffff",
+    borderRadius: 20,
+    padding: 10,
+    margin: 5,
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  etoileContainer: {
+    width: 50, // Ajustez la taille selon votre design
+    height: 50, // Ajustez la taille selon votre design
+    justifyContent: "center",
+    alignItems: "center",
+    position: "relative",
+  },
+  etoileBackground: {
+    width: "100%",
+    height: "100%",
+    position: "absolute", // Permet au texte de s'afficher au-dessus de l'image
+  },
+  etoileNumero: {
+    color: "#ffffff", // Ajustez la couleur du texte si nécessaire
+    fontWeight: "bold",
+    fontSize: 20, // Ajustez la taille du texte selon votre design
+  },
+
+  // Styles pour les numéros de l'Eurodreams
+  eurodreamsNumeros: {
+    backgroundColor: "#781ea6", // --eurodreams-bg-color
+    color: "#ffffff",
+    borderRadius: 20,
+    padding: 10,
+    margin: 5,
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  eurodreamsDream: {
+    backgroundColor: "#ff3c69", // --eurodreams-dream-bg-color
+    color: "#ffffff",
+    borderRadius: 20,
+    padding: 10,
+    margin: 5,
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
