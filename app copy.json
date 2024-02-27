@@ -17,8 +17,7 @@
         {
           "fonts": [
             "./assets/fonts/luckiestguyregular.ttf",
-            "./assets/fonts/hennypennyregular.ttf",
-            "./assets/fonts/roboto-700.ttf"
+            "./assets/fonts/hennypennyregular.ttf"
           ]
         }
       ]
@@ -43,7 +42,6 @@
       "eas": {
         "projectId": "6fff270c-9a2f-45ef-b081-ba3adea274a1"
       }
-    },
-    "plugins": ["expo-font"]
+    }
   }
 }

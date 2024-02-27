@@ -13,12 +13,14 @@ import { StatusBar } from "expo-status-bar";
 import seedrandom from "seedrandom";
 
 import { useFonts } from "expo-font";
+
 import * as SplashScreen from "expo-splash-screen";
+import { useCallback } from "react";
 
 const { width, height } = Dimensions.get("window");
 
 const Love4NumWidget = () => {
-  const [isReady, setIsReady] = useState(false);
+  // const [isReady, setIsReady] = useState(false);
   const [phrase, setPhrase] = useState("");
 
   const [jeuSelectionne, setJeuSelectionne] = useState<string | null>(null);
@@ -60,39 +62,21 @@ const Love4NumWidget = () => {
     );
   };
 
-  const [fontsLoaded] = useFonts({
-    luckiestguyregular: require("./assets/fonts/luckiestguyregular.ttf"),
+  SplashScreen.preventAutoHideAsync();
+
+  const [fontsLoaded, fontError] = useFonts({
     hennypennyregular: require("./assets/fonts/hennypennyregular.ttf"),
+    luckiestguyregular: require("./assets/fonts/luckiestguyregular.ttf"),
   });
 
-  useEffect(() => {
-    // Vous pourriez avoir d'autres conditions de prêteté ici
-    const appIsReady = fontsLoaded; // Exemple basique avec le chargement des polices
-
-    if (appIsReady) {
-      console.log("Application prête, cachant SplashScreen");
-      setIsReady(true);
-
-      // Cache l'écran de démarrage une fois que l'application est prête
-      SplashScreen.hideAsync().catch((error) => {
-        console.error(
-          "Erreur lors de la tentative de cacher l'écran de démarrage",
-          error
-        );
-      });
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded || fontError) {
+      await SplashScreen.hideAsync();
     }
-  }, [fontsLoaded]); // Ajoutez d'autres dépendances ici si nécessaire
+  }, [fontsLoaded, fontError]);
 
-  console.log("Polices chargées :", fontsLoaded);
-  console.log("Style du titre :", styles.title);
-
-  // Vous pouvez également afficher un écran de chargement ici si `isReady` est false
-  if (!isReady) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text>Chargement...</Text>
-      </View>
-    );
+  if (!fontsLoaded && !fontError) {
+    return null;
   }
 
   const genererNumerosUniques = (debut, fin, count) => {
@@ -147,12 +131,8 @@ const Love4NumWidget = () => {
     }
   };
 
-  // if (!isReady) {
-  //   return null;
-  // }
-
   return (
-    <ScrollView style={styles.scrollView}>
+    <ScrollView style={styles.scrollView} onLayout={onLayoutRootView}>
       <StatusBar style="light" />
       <View style={styles.content}>
         <Image
@@ -164,6 +144,11 @@ const Love4NumWidget = () => {
         <Text style={styles.title}>
           Transformez votre amour en numéros de chance
         </Text>
+        <Text style={styles.para}>
+          Entrez une phrase ou des mots d'amour pour voir comment l'univers
+          transforme votre message en numéros de chance.
+        </Text>
+
         <TextInput
           style={styles.input}
           placeholder="Entrez votre phrase positive"
@@ -172,7 +157,11 @@ const Love4NumWidget = () => {
           value={phrase}
           onChangeText={setPhrase}
         />
-        <Text style={styles.instruction}>Choisissez le tirage :</Text>
+
+        <Text style={styles.instruction}>
+          Choisissez le tirage pour générer vos numéros d'amour !
+        </Text>
+
         <View style={styles.gameSelection}>
           <GameSelector
             onPress={() => genererNumerosLoto("loto")}
@@ -198,13 +187,10 @@ const Love4NumWidget = () => {
 
         {/* Affichage conditionnel en fonction du jeu sélectionné */}
         {jeuSelectionne === "loto" && (
-          <View style={{ alignItems: "center", marginTop: 20 }}>
-            <Text
-              style={{ color: "#FFEB3B", fontSize: 18, fontWeight: "bold" }}
-            >
-              Vos numéros pour le Loto
-            </Text>
-            <View style={{ flexDirection: "row", marginTop: 10 }}>
+          // <View style={{ alignItems: "center", marginTop: 20 }}>
+          <View>
+            <Text style={styles.textTirage}>Vos numéros pour le Loto</Text>
+            <View style={{ flexDirection: "row" }}>
               {lotoNumbers.map((num, index) => (
                 <View key={index} style={styles.lotoNumeros}>
                   <Text style={{ color: "#ffffff" }}>{num}</Text>
@@ -220,13 +206,11 @@ const Love4NumWidget = () => {
         )}
 
         {jeuSelectionne === "euromillions" && (
-          <View style={{ alignItems: "center", marginTop: 20 }}>
-            <Text
-              style={{ color: "#FFEB3B", fontSize: 18, fontWeight: "bold" }}
-            >
+          <View>
+            <Text style={styles.textTirage}>
               Vos numéros pour l'Euromillions
             </Text>
-            <View style={{ flexDirection: "row", marginTop: 10 }}>
+            <View style={{ flexDirection: "row" }}>
               {euromillionsNumbers.map((num, index) => (
                 <View key={index} style={styles.euromillionsNumeros}>
                   <Text style={{ color: "#ffffff" }}>{num}</Text>
@@ -240,13 +224,9 @@ const Love4NumWidget = () => {
         )}
 
         {jeuSelectionne === "eurodreams" && (
-          <View style={{ alignItems: "center", marginTop: 20 }}>
-            <Text
-              style={{ color: "#FFEB3B", fontSize: 18, fontWeight: "bold" }}
-            >
-              Vos numéros pour l'Eurodreams
-            </Text>
-            <View style={{ flexDirection: "row", marginTop: 10 }}>
+          <View>
+            <Text style={styles.textTirage}>Vos numéros pour l'Eurodreams</Text>
+            <View style={{ flexDirection: "row" }}>
               {eurodreamsNumbers.map((num, index) => (
                 <View key={index} style={styles.eurodreamsNumeros}>
                   <Text style={{ color: "#ffffff" }}>{num}</Text>
@@ -281,21 +261,31 @@ const styles = StyleSheet.create({
   },
 
   image: {
-    width: width, // largeur moins les marges
-    height: height * 0.4, // 30% de la hauteur de l'écran
+    width: width * 0.6, // largeur moins les marges
+    height: height * 0.3, // 30% de la hauteur de l'écran
     // Autres styles...
   },
 
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontFamily: "hennypennyregular",
-    //fontFamily: "luckiestguyregular",
-    fontWeight: "bold",
-    color: "#FFEB3B",
+    //color: "#FFEB3B",
+    color: "#e0b0ff",
     textAlign: "center",
-    marginBottom: 20,
-    marginTop: 10,
+    // marginBottom: 5,
+    //marginTop: 5,
   },
+  para: {
+    fontSize: 14,
+    // fontFamily: "hennypennyregular",
+    //color: "#FFEB3B",
+    color: "#e0b0ff",
+    textAlign: "center",
+    marginBottom: 15,
+    marginTop: 5,
+    marginHorizontal: 20,
+  },
+
   input: {
     width: width - 40,
     padding: 10,
@@ -306,8 +296,25 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   instruction: {
-    color: "#FFF",
-    marginBottom: 20,
+    fontSize: 14,
+    // fontFamily: "hennypennyregular",
+    //color: "#FFEB3B",
+    color: "#e0b0ff",
+    textAlign: "center",
+    marginBottom: 15,
+    marginTop: 5,
+    marginHorizontal: 20,
+  },
+
+  textTirage: {
+    fontSize: 16,
+    fontFamily: "hennypennyregular",
+    //color: "#FFEB3B",
+    color: "yellow",
+    textAlign: "center",
+    marginBottom: 5,
+    marginTop: 25,
+    marginHorizontal: 20,
   },
   gameSelection: {
     flexDirection: "row",
