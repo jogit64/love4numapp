@@ -11,9 +11,18 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
+    "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/luckiestguyregular.ttf",
+            "./assets/fonts/hennypennyregular.ttf"
+          ]
+        }
+      ]
     ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
@@ -21,10 +30,18 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [],
+      "package": "com.souda.love4num"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "privacy": "unlisted",
+    "extra": {
+      "eas": {
+        "projectId": "6fff270c-9a2f-45ef-b081-ba3adea274a1"
+      }
     }
   }
 }

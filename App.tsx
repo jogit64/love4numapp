@@ -11,7 +11,8 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import seedrandom from "seedrandom";
-import * as Font from "expo-font";
+
+import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
 const { width, height } = Dimensions.get("window");
@@ -19,7 +20,7 @@ const { width, height } = Dimensions.get("window");
 const Love4NumWidget = () => {
   const [isReady, setIsReady] = useState(false);
   const [phrase, setPhrase] = useState("");
-  const [result, setResult] = useState("");
+
   const [jeuSelectionne, setJeuSelectionne] = useState<string | null>(null);
 
   const [lotoNumbers, setLotoNumbers] = useState([]);
@@ -59,37 +60,40 @@ const Love4NumWidget = () => {
     );
   };
 
+  const [fontsLoaded] = useFonts({
+    luckiestguyregular: require("./assets/fonts/luckiestguyregular.ttf"),
+    hennypennyregular: require("./assets/fonts/hennypennyregular.ttf"),
+  });
+
   useEffect(() => {
-    async function prepare() {
-      console.log("Préparation de l'application...");
-      try {
-        console.log("Empêchement de l'auto-caché de l'écran de démarrage...");
-        await SplashScreen.preventAutoHideAsync();
-        console.log("Chargement des polices...");
-        await Font.loadAsync({
-          LuckiestGuyRegular: require("./assets/fonts/LuckiestGuyRegular.ttf"),
-          HennyPennyRegular: require("./assets/fonts/HennyPennyRegular.ttf"),
-          // Ajoutez d'autres polices ici
-        });
-        console.log("Polices chargées avec succès.");
-      } catch (e) {
-        console.warn("Erreur lors du chargement des polices:", e);
-      } finally {
-        console.log(
-          "Mise à jour de l'état isReady et caché de l'écran de démarrage..."
+    // Vous pourriez avoir d'autres conditions de prêteté ici
+    const appIsReady = fontsLoaded; // Exemple basique avec le chargement des polices
+
+    if (appIsReady) {
+      console.log("Application prête, cachant SplashScreen");
+      setIsReady(true);
+
+      // Cache l'écran de démarrage une fois que l'application est prête
+      SplashScreen.hideAsync().catch((error) => {
+        console.error(
+          "Erreur lors de la tentative de cacher l'écran de démarrage",
+          error
         );
-        setIsReady(true);
-        await SplashScreen.hideAsync();
-        console.log("Écran de démarrage caché, application prête.");
-      }
+      });
     }
+  }, [fontsLoaded]); // Ajoutez d'autres dépendances ici si nécessaire
 
-    prepare();
-  }, []);
+  console.log("Polices chargées :", fontsLoaded);
+  console.log("Style du titre :", styles.title);
 
-  // const generateNumbers = async (gameType) => {
-  //   setResult(`Résultat pour ${gameType}: 1, 2, 3, 4, 5`);
-  // };
+  // Vous pouvez également afficher un écran de chargement ici si `isReady` est false
+  if (!isReady) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Chargement...</Text>
+      </View>
+    );
+  }
 
   const genererNumerosUniques = (debut, fin, count) => {
     let numeros = new Set();
@@ -143,9 +147,9 @@ const Love4NumWidget = () => {
     }
   };
 
-  if (!isReady) {
-    return null;
-  }
+  // if (!isReady) {
+  //   return null;
+  // }
 
   return (
     <ScrollView style={styles.scrollView}>
@@ -284,8 +288,8 @@ const styles = StyleSheet.create({
 
   title: {
     fontSize: 24,
-    fontFamily: "HennyPennyRegular",
-    //fontFamily: "LuckiestGuyRegular",
+    fontFamily: "hennypennyregular",
+    //fontFamily: "luckiestguyregular",
     fontWeight: "bold",
     color: "#FFEB3B",
     textAlign: "center",
