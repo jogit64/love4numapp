@@ -22,7 +22,6 @@ const { width, height } = Dimensions.get("window");
 const Love4NumWidget = () => {
   // const [isReady, setIsReady] = useState(false);
   const [phrase, setPhrase] = useState("");
-
   const [jeuSelectionne, setJeuSelectionne] = useState<string | null>(null);
 
   const [lotoNumbers, setLotoNumbers] = useState([]);
@@ -130,119 +129,6 @@ const Love4NumWidget = () => {
         break;
     }
   };
-
-  return (
-    <ScrollView style={styles.scrollView} onLayout={onLayoutRootView}>
-      <StatusBar style="light" />
-      <View style={styles.content}>
-        <Image
-          source={require("../assets/love4nul_log3.png")}
-          style={styles.image}
-          resizeMode="cover" // ou "contain", "stretch", "repeat", "center"
-        />
-
-        <Text style={styles.title}>
-          Transformez votre amour en numéros de chance
-        </Text>
-        <Text style={styles.para}>
-          Entrez une phrase ou des mots d'amour pour voir comment l'univers
-          transforme votre message en numéros de chance.
-        </Text>
-
-        <TextInput
-          style={styles.input}
-          placeholder="Entrez votre phrase positive"
-          placeholderTextColor="#e0b0ff"
-          cursorColor={"#e0b0ff"}
-          value={phrase}
-          onChangeText={setPhrase}
-        />
-
-        <Text style={styles.instruction}>
-          Choisissez le tirage pour générer vos numéros d'amour !
-        </Text>
-
-        <View style={styles.gameSelection}>
-          <GameSelector
-            onPress={() => genererNumerosLoto("loto")}
-            imageSource={require("../assets/loto.png")}
-            label="Loto"
-            jeuId="loto" // Identifiant unique pour le jeu
-          />
-          <GameSelector
-            onPress={() => genererNumerosLoto("euromillions")}
-            imageSource={require("../assets/euromillions.png")}
-            label="Euromillions"
-            jeuId="euromillions" // Identifiant unique pour le jeu
-          />
-          <GameSelector
-            onPress={() => genererNumerosLoto("eurodreams")}
-            imageSource={require("../assets/dreams.png")}
-            label="Eurodreams"
-            jeuId="eurodreams" // Identifiant unique pour le jeu
-          />
-        </View>
-
-        {/* {result && <Text style={styles.result}>{result}</Text>} */}
-
-        {/* Affichage conditionnel en fonction du jeu sélectionné */}
-        {jeuSelectionne === "loto" && (
-          // <View style={{ alignItems: "center", marginTop: 20 }}>
-          <View>
-            <Text style={styles.textTirage}>Vos numéros pour le Loto</Text>
-            <View style={{ flexDirection: "row" }}>
-              {lotoNumbers.map((num, index) => (
-                <View key={index} style={styles.lotoNumeros}>
-                  <Text style={{ color: "#ffffff" }}>{num}</Text>
-                </View>
-              ))}
-              {lotoComplementaire && (
-                <View style={styles.lotoComplementaire}>
-                  <Text style={{ color: "#ffffff" }}>{lotoComplementaire}</Text>
-                </View>
-              )}
-            </View>
-          </View>
-        )}
-
-        {jeuSelectionne === "euromillions" && (
-          <View>
-            <Text style={styles.textTirage}>
-              Vos numéros pour l'Euromillions
-            </Text>
-            <View style={{ flexDirection: "row" }}>
-              {euromillionsNumbers.map((num, index) => (
-                <View key={index} style={styles.euromillionsNumeros}>
-                  <Text style={{ color: "#ffffff" }}>{num}</Text>
-                </View>
-              ))}
-              {euromillionsEtoiles.map((etoile, index) => (
-                <EtoileEuromillions key={index} numero={etoile} />
-              ))}
-            </View>
-          </View>
-        )}
-
-        {jeuSelectionne === "eurodreams" && (
-          <View>
-            <Text style={styles.textTirage}>Vos numéros pour l'Eurodreams</Text>
-            <View style={{ flexDirection: "row" }}>
-              {eurodreamsNumbers.map((num, index) => (
-                <View key={index} style={styles.eurodreamsNumeros}>
-                  <Text style={{ color: "#ffffff" }}>{num}</Text>
-                </View>
-              ))}
-              {eurodreamsDream && (
-                <View style={styles.eurodreamsDream}>
-                  <Text style={{ color: "#ffffff" }}>{eurodreamsDream}</Text>
-                </View>
-              )}
-            </View>
-          </View>
-        )}
-      </View>
-    </ScrollView>
-  );
 };
 
 const styles = StyleSheet.create({

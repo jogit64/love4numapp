@@ -22,6 +22,14 @@ export default function AppNavigation() {
               : "information-circle-outline";
           }
 
+          //   if (route.name === "Info") {
+          //     iconName = focused
+          //  //     ? "information-circle"
+          //       : "information-circle-outline";
+          //   } else if (route.name === "LoveNumbers") {
+          //     iconName = focused ? "heart" : "heart-outline";
+          //   }
+
           // Retourne l'icône avec le bon nom
           return <Ionicons name={iconName} size={size} color={color} />;
         },
@@ -35,8 +43,8 @@ export default function AppNavigation() {
         headerShown: false, // Cache le titre en haut de chaque page
       })}
     >
-      <Tab.Screen name="LoveNumbers" component={LoveNumbersScreen} />
       <Tab.Screen name="Info" component={InfoScreen} />
+      <Tab.Screen name="LoveNumbers" component={LoveNumbersScreen} />
     </Tab.Navigator>
   );
 }
