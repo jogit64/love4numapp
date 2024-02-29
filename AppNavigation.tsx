@@ -22,25 +22,17 @@ export default function AppNavigation() {
               : "information-circle-outline";
           }
 
-          //   if (route.name === "Info") {
-          //     iconName = focused
-          //  //     ? "information-circle"
-          //       : "information-circle-outline";
-          //   } else if (route.name === "LoveNumbers") {
-          //     iconName = focused ? "heart" : "heart-outline";
-          //   }
-
           // Retourne l'icône avec le bon nom
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarShowLabel: false, // Cache le texte de l'onglet
+        tabBarShowLabel: false,
         tabBarStyle: {
-          backgroundColor: "#3d1961", // Ajuste ici la couleur de fond souhaitée ou transparent
-          position: "absolute", // Pour le style absolu si nécessaire
-          borderTopWidth: 0, // Pour enlever la ligne en haut de la tabBar
-          height: 60, // Ajuste la hauteur ici
+          backgroundColor: "#3d1961",
+          position: "absolute",
+          borderTopWidth: 0,
+          height: 60,
         },
-        headerShown: false, // Cache le titre en haut de chaque page
+        headerShown: false,
       })}
     >
       <Tab.Screen name="Info" component={InfoScreen} />

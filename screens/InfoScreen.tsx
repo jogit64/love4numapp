@@ -17,31 +17,31 @@ import { useNavigation } from "@react-navigation/native";
 const { width, height } = Dimensions.get("window");
 
 const InfoScreen = () => {
-  SplashScreen.preventAutoHideAsync();
+  // SplashScreen.preventAutoHideAsync();
   const navigation = useNavigation();
 
-  const [fontsLoaded, fontError] = useFonts({
-    hennypennyregular: require("../assets/fonts/hennypennyregular.ttf"),
-    luckiestguyregular: require("../assets/fonts/luckiestguyregular.ttf"),
-    lemonregular: require("../assets/fonts/lemon-regular.ttf"),
-    ralewaythin: require("../assets/fonts/Raleway-Thin.ttf"),
-    robotoregular: require("../assets/fonts/roboto-regular.ttf"),
-    roboto700: require("../assets/fonts/roboto-700.ttf"),
-    ralewayextraBold: require("../assets/fonts/Raleway-ExtraBold.ttf"),
-  });
+  //   const [fontsLoaded, fontError] = useFonts({
+  //     hennypennyregular: require("../assets/fonts/hennypennyregular.ttf"),
+  //     luckiestguyregular: require("../assets/fonts/luckiestguyregular.ttf"),
+  //     lemonregular: require("../assets/fonts/lemon-regular.ttf"),
+  //     ralewaythin: require("../assets/fonts/Raleway-Thin.ttf"),
+  //     robotoregular: require("../assets/fonts/roboto-regular.ttf"),
+  //     roboto700: require("../assets/fonts/roboto-700.ttf"),
+  //     ralewayextraBold: require("../assets/fonts/Raleway-ExtraBold.ttf"),
+  //   });
 
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded || fontError) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded, fontError]);
+  //   const onLayoutRootView = useCallback(async () => {
+  //     if (fontsLoaded || fontError) {
+  //       await SplashScreen.hideAsync();
+  //     }
+  //   }, [fontsLoaded, fontError]);
 
-  if (!fontsLoaded && !fontError) {
-    return null;
-  }
+  //   if (!fontsLoaded && !fontError) {
+  //     return null;
+  //   }
 
   return (
-    <ScrollView style={styles.scrollView} onLayout={onLayoutRootView}>
+    <ScrollView style={styles.scrollView}>
       <StatusBar style="light" />
       <View style={styles.content}>
         <Image

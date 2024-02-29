@@ -22,7 +22,6 @@ import { collection, getDocs } from "firebase/firestore";
 
 import { doc, getDoc } from "firebase/firestore";
 
-import { calculateDaysBetweenDates } from "../utils/dateUtils";
 import { calculateExactDrawsSinceLastOut } from "../utils/dateUtils";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
@@ -210,7 +209,7 @@ const Love4NumWidget = () => {
             jeuId="eurodreams" // Identifiant unique pour le jeu
           />
         </View>
-        {/* {result && <Text style={styles.result}>{result}</Text>} */}
+
         {/* Affichage conditionnel en fonction du jeu sélectionné */}
         {/* VERSION 0 sans stats */}
         {jeuSelectionne === "loto" && (
@@ -390,16 +389,6 @@ const styles = StyleSheet.create({
     borderBottomColor: "#bfa2cb",
     textAlign: "center",
   },
-  //   instruction: {
-  //     fontSize: 14,
-  //     // fontFamily: "hennypennyregular",
-  //     //color: "#FFEB3B",
-  //     color: "#e0b0ff",
-  //     textAlign: "center",
-  //     marginBottom: 15,
-  //     marginTop: 5,
-  //     marginHorizontal: 20,
-  //   },
 
   textTirage: {
     fontSize: 16,
@@ -439,13 +428,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
 
-  result: {
-    marginTop: 20,
-    fontSize: 18,
-    color: "#FFEB3B",
-    fontWeight: "bold",
-    padding: 10,
-  },
+  //   result: {
+  //     marginTop: 20,
+  //     fontSize: 18,
+  //     color: "#FFEB3B",
+  //     fontWeight: "bold",
+  //     padding: 10,
+  //   },
 
   selectedGame: {
     backgroundColor: "#ADD8E6", // Bleu clair pour le jeu sélectionné
