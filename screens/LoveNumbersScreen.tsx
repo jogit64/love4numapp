@@ -23,6 +23,8 @@ import { collection, getDocs } from "firebase/firestore";
 import { doc, getDoc } from "firebase/firestore";
 
 import { calculateDaysBetweenDates } from "../utils/dateUtils";
+import { calculateExactDrawsSinceLastOut } from "../utils/dateUtils";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 const { width, height } = Dimensions.get("window");
 
@@ -169,19 +171,14 @@ const Love4NumWidget = () => {
       <StatusBar style="light" />
       <View style={styles.content}>
         <Image
-          source={require("../assets/love4nul_log3.png")}
+          source={require("../assets/simplelogolove4num.png")}
           style={styles.image}
-          resizeMode="cover" // ou "contain", "stretch", "repeat", "center"
+          resizeMode="contain" // ou "contain", "stretch", "repeat", "center"
         />
-
-        <Text style={styles.title}>
-          Transformez votre amour en numéros de chance
-        </Text>
         <Text style={styles.para}>
           Entrez une phrase ou des mots d'amour pour voir comment l'univers
           transforme votre message en numéros de chance.
         </Text>
-
         <TextInput
           style={styles.input}
           placeholder="Entrez votre phrase positive"
@@ -190,11 +187,9 @@ const Love4NumWidget = () => {
           value={phrase}
           onChangeText={setPhrase}
         />
-
-        <Text style={styles.instruction}>
+        <Text style={styles.para}>
           Choisissez le tirage pour générer vos numéros d'amour !
         </Text>
-
         <View style={styles.gameSelection}>
           <GameSelector
             onPress={() => genererNumerosLoto("loto")}
@@ -215,13 +210,10 @@ const Love4NumWidget = () => {
             jeuId="eurodreams" // Identifiant unique pour le jeu
           />
         </View>
-
         {/* {result && <Text style={styles.result}>{result}</Text>} */}
-
         {/* Affichage conditionnel en fonction du jeu sélectionné */}
-
         {/* VERSION 0 sans stats */}
-        {/* {jeuSelectionne === "loto" && (
+        {jeuSelectionne === "loto" && (
           // <View style={{ alignItems: "center", marginTop: 20 }}>
           <View>
             <Text style={styles.textTirage}>Vos numéros pour le Loto</Text>
@@ -238,135 +230,63 @@ const Love4NumWidget = () => {
               )}
             </View>
           </View>
-        )} */}
+        )}
 
-        {/* VERSION 1 Affichage OK mais seult Num sortie et date */}
+        {/* STATISTIQUES */}
         {jeuSelectionne === "loto" && (
-          <View>
-            <Text style={styles.textTirage}>Vos numéros pour le Loto</Text>
-            <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+          <View style={styles.statBloc}>
+            <Text style={styles.textTirage}>Vos Statistiques de Chance</Text>
+            <Text style={styles.statExplanation}>
+              Basé sur les tirages depuis le 4 novembre 2019.
+            </Text>
+
+            <View style={styles.cardContainer}>
               {lotoNumbers.map((num, index) => (
-                <View key={index} style={styles.lotoNumeroContainer}>
-                  <View style={styles.lotoNumeros}>
-                    <Text style={{ color: "#ffffff" }}>{num}</Text>
-                  </View>
-                  {/* Nouvelle Vue pour les statistiques séparées */}
-                  {statsNumeros.length > index && (
-                    <View style={styles.lotoStatistiques}>
-                      <Text style={{ color: "#ffffff", fontSize: 12 }}>
-                        Sorties: {statsNumeros[index]?.nombreDeSorties},
-                        Dernière sortie: {statsNumeros[index]?.derniereSortie}
+                <View key={index} style={styles.card}>
+                  {/* Numéro */}
+                  <Text style={styles.number}>{num}</Text>
+
+                  {/* Statistiques */}
+                  <View style={styles.stats}>
+                    {/* Dernière sortie */}
+                    <View style={styles.statItem}>
+                      <MaterialIcons name="history" size={20} color="#ffffff" />
+                      <Text style={styles.statText}>
+                        {statsNumeros[index]?.derniereSortie
+                          ? `${calculateExactDrawsSinceLastOut(
+                              statsNumeros[index]?.derniereSortie
+                            )} tirages`
+                          : "Données non disponibles"}
                       </Text>
                     </View>
-                  )}
-                </View>
-              ))}
-              {lotoComplementaire && (
-                <View style={styles.lotoComplementaireContainer}>
-                  <View style={styles.lotoComplementaire}>
-                    <Text style={{ color: "#ffffff" }}>
-                      {lotoComplementaire}
-                    </Text>
-                  </View>
-                  {/* Affichage des statistiques du numéro complémentaire */}
-                  <View style={styles.lotoStatistiques}>
-                    <Text style={{ color: "#ffffff", fontSize: 12 }}>
-                      {/* Exemple de contenu, ajustez selon vos données */}
-                      Statistique complémentaire...
-                    </Text>
+
+                    {/* Pourcentage de sorties */}
+                    <View style={styles.statItem}>
+                      <MaterialIcons
+                        name="pie-chart"
+                        size={20}
+                        color="#ffffff"
+                      />
+                      <Text style={styles.statText}>
+                        {statsNumeros[index]?.pourcentageDeSorties}%
+                      </Text>
+                    </View>
                   </View>
                 </View>
-              )}
+              ))}
             </View>
-          </View>
-        )}
 
-        {/* VERSION 2 Affichage OK mais seult % */}
-        {jeuSelectionne === "loto" && (
-          <View>
-            <Text style={styles.textTirage}>Vos numéros pour le Loto</Text>
-            <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-              {lotoNumbers.map((num, index) => (
-                <View key={index} style={styles.lotoNumeros}>
-                  <Text style={{ color: "#ffffff" }}>{num}</Text>
-                </View>
-              ))}
-            </View>
-            {/* Afficher les statistiques séparément */}
-            {lotoComplementaire && (
-              <View style={styles.lotoComplementaire}>
-                <Text style={{ color: "#ffffff" }}>{lotoComplementaire}</Text>
+            {/* Légende pour les icônes */}
+            <View style={styles.legend}>
+              <View style={styles.legendItem}>
+                <MaterialIcons name="history" size={20} color="#ffffff" />
+                <Text style={styles.legendText}>Dernière sortie</Text>
               </View>
-            )}
-            <View style={{ marginTop: 10 }}>
-              {statsNumeros.map((stat, index) => (
-                <Text key={index} style={{ color: "#ffffff", fontSize: 12 }}>
-                  Numéro {stat.numero}: {stat.pourcentageDeSorties}% de sorties
-                </Text>
-              ))}
-            </View>
-          </View>
-        )}
-
-        {/* VERSION 3 avec nbre de jour % */}
-        {jeuSelectionne === "loto" && (
-          <View>
-            <Text style={styles.textTirage}>Vos numéros pour le Loto</Text>
-            <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-              {lotoNumbers.map((num, index) => (
-                <View key={index} style={styles.lotoNumeros}>
-                  <Text style={{ color: "#ffffff" }}>{num}</Text>
-                </View>
-              ))}
-            </View>
-            {/* Afficher les statistiques séparément */}
-            {lotoComplementaire && (
-              <View style={styles.lotoComplementaire}>
-                <Text style={{ color: "#ffffff" }}>{lotoComplementaire}</Text>
+              <View style={styles.legendItem}>
+                <MaterialIcons name="pie-chart" size={20} color="#ffffff" />
+                <Text style={styles.legendText}>% de sorties</Text>
               </View>
-            )}
-            <View style={{ marginTop: 10 }}>
-              {statsNumeros.map((stat, index) => (
-                <Text key={index} style={{ color: "#ffffff", fontSize: 12 }}>
-                  Numéro {stat.numero}: {stat.pourcentageDeSorties}% de sorties
-                </Text>
-              ))}
             </View>
-          </View>
-        )}
-
-        {jeuSelectionne === "loto" && (
-          <View>
-            <Text style={styles.textTirage}>Vos numéros pour le Loto</Text>
-            <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-              {lotoNumbers.map((num, index) => (
-                <View key={index} style={styles.lotoNumeroContainer}>
-                  <View style={styles.lotoNumeros}>
-                    <Text style={{ color: "#ffffff" }}>{num}</Text>
-                  </View>
-                  {/* Affichez ici les statistiques pour chaque numéro si disponibles */}
-                  {statsNumeros.length > index &&
-                    statsNumeros[index]?.derniereSortie && (
-                      <View style={styles.lotoStatistiques}>
-                        <Text style={{ color: "#ffffff", fontSize: 12 }}>
-                          Sorties: {statsNumeros[index]?.nombreDeSorties},
-                          Dernière sortie: il y a{" "}
-                          {calculateDaysBetweenDates(
-                            statsNumeros[index]?.derniereSortie
-                          )}{" "}
-                          jours
-                        </Text>
-                      </View>
-                    )}
-                </View>
-              ))}
-            </View>
-            {/* Affichage du numéro complémentaire si nécessaire */}
-            {lotoComplementaire && (
-              <View style={styles.lotoComplementaire}>
-                <Text style={{ color: "#ffffff" }}>{lotoComplementaire}</Text>
-              </View>
-            )}
           </View>
         )}
 
@@ -387,7 +307,6 @@ const Love4NumWidget = () => {
             </View>
           </View>
         )}
-
         {jeuSelectionne === "eurodreams" && (
           <View>
             <Text style={styles.textTirage}>Vos numéros pour l'Eurodreams</Text>
@@ -427,9 +346,13 @@ const styles = StyleSheet.create({
   },
 
   image: {
-    width: width * 0.6, // largeur moins les marges
-    height: height * 0.3, // 30% de la hauteur de l'écran
-    // Autres styles...
+    width: width * 0.6,
+    height: height * 0.1,
+    // width: 80,
+    // height: 80,
+    //backgroundColor: "#ccc",
+    marginTop: 50,
+    marginBottom: 20,
   },
 
   title: {
@@ -442,14 +365,18 @@ const styles = StyleSheet.create({
     //marginTop: 5,
   },
   para: {
-    fontSize: 14,
-    // fontFamily: "hennypennyregular",
-    //color: "#FFEB3B",
-    color: "#e0b0ff",
+    fontSize: 16,
+    //fontFamily: "lemonregular",
+    //fontFamily: "ralewaythin",
+    //fontFamily: "ralewayextraBold",
+    fontFamily: "robotoregular",
+    //color: "#e0b0ff",
+    color: "#fff",
     textAlign: "center",
     marginBottom: 15,
     marginTop: 5,
     marginHorizontal: 20,
+    lineHeight: 25,
   },
 
   input: {
@@ -457,26 +384,29 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 20,
     color: "#e0b0ff",
-    borderRadius: 25,
-    backgroundColor: "#3d1961",
+    //borderRadius: 25,
+    backgroundColor: "#1b1138",
+    borderBottomWidth: 0.2,
+    borderBottomColor: "#bfa2cb",
     textAlign: "center",
   },
-  instruction: {
-    fontSize: 14,
-    // fontFamily: "hennypennyregular",
-    //color: "#FFEB3B",
-    color: "#e0b0ff",
-    textAlign: "center",
-    marginBottom: 15,
-    marginTop: 5,
-    marginHorizontal: 20,
-  },
+  //   instruction: {
+  //     fontSize: 14,
+  //     // fontFamily: "hennypennyregular",
+  //     //color: "#FFEB3B",
+  //     color: "#e0b0ff",
+  //     textAlign: "center",
+  //     marginBottom: 15,
+  //     marginTop: 5,
+  //     marginHorizontal: 20,
+  //   },
 
   textTirage: {
     fontSize: 16,
-    fontFamily: "hennypennyregular",
+    //fontFamily: "hennypennyregular",
+    fontFamily: "robotoregular",
     //color: "#FFEB3B",
-    color: "yellow",
+    color: "#FFF",
     textAlign: "center",
     marginBottom: 5,
     marginTop: 25,
@@ -630,6 +560,60 @@ const styles = StyleSheet.create({
   lotoComplementaireContainer: {
     alignItems: "center",
     margin: 5, // Ajustez selon votre mise en page
+  },
+
+  statBloc: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-around",
+    marginBottom: 60,
+  },
+
+  statExplanation: {
+    color: "grey",
+    fontFamily: "robotoregular",
+    fontSize: 14,
+    //color: "#FFEB3B",
+    textAlign: "center",
+    marginBottom: 5,
+  },
+
+  cardContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-around",
+  },
+  card: {
+    backgroundColor: "#fe64f7",
+    borderRadius: 10,
+    padding: 10,
+    margin: 5,
+    alignItems: "center",
+  },
+  number: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  stats: {
+    marginTop: 5,
+  },
+  statText: {
+    fontSize: 14,
+    fontFamily: "robotoregular",
+  },
+  legend: {
+    marginTop: 20,
+    alignItems: "center",
+  },
+  legendItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 5,
+  },
+  legendText: {
+    marginLeft: 10,
+    color: "#ffffff",
+    fontSize: 16,
   },
 });
 

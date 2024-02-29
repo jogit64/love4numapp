@@ -26,6 +26,7 @@ const InfoScreen = () => {
     lemonregular: require("../assets/fonts/lemon-regular.ttf"),
     ralewaythin: require("../assets/fonts/Raleway-Thin.ttf"),
     robotoregular: require("../assets/fonts/roboto-regular.ttf"),
+    roboto700: require("../assets/fonts/roboto-700.ttf"),
     ralewayextraBold: require("../assets/fonts/Raleway-ExtraBold.ttf"),
   });
 
