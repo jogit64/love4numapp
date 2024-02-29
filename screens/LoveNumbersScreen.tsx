@@ -40,7 +40,9 @@ const Love4NumWidget = () => {
 
   const [eurodreamsNumbers, setEurodreamsNumbers] = useState([]);
   const [eurodreamsDream, setEurodreamsDream] = useState(null);
+
   const [statsNumeros, setStatsNumeros] = useState([]);
+  const [chanceNumberStats, setChanceNumberStats] = useState(null);
 
   const GameSelector = ({ onPress, imageSource, label, jeuId }) => (
     <TouchableOpacity
@@ -147,6 +149,19 @@ const Love4NumWidget = () => {
         setLotoNumbers(numerosLoto);
         setLotoComplementaire(numeroComplementaireLoto);
         setStatsNumeros(resolvedStats);
+
+        // Récupération des statistiques pour le numéro complémentaire
+        const numeroComplementaireStatsPromise = fetchStatsForNumber(
+          lotoComplementaire,
+          "chance"
+        );
+        numeroComplementaireStatsPromise
+          .then((chanceStats) => {
+            setChanceNumberStats(chanceStats);
+          })
+          .catch((error) => {
+            console.error("Error fetching stats for chance number", error);
+          });
         break;
       case "euromillions":
         seedrandom(seedAjustee, { global: true });
@@ -232,62 +247,102 @@ const Love4NumWidget = () => {
         )}
 
         {/* STATISTIQUES */}
-        {jeuSelectionne === "loto" && (
-          <View style={styles.statBloc}>
-            <Text style={styles.textTirage}>Vos Statistiques de Chance</Text>
-            <Text style={styles.statExplanation}>
-              Basé sur les tirages depuis le 4 novembre 2019.
-            </Text>
+        {jeuSelectionne === "loto" &&
+          lotoComplementaire &&
+          chanceNumberStats && (
+            <View style={styles.statBloc}>
+              <Text style={styles.textTirage}>Vos Statistiques de Chance</Text>
+              <Text style={styles.statExplanation}>
+                Basé sur les tirages depuis le 4 novembre 2019.
+              </Text>
 
-            <View style={styles.cardContainer}>
-              {lotoNumbers.map((num, index) => (
-                <View key={index} style={styles.card}>
-                  {/* Numéro */}
-                  <Text style={styles.number}>{num}</Text>
+              <View style={styles.cardContainer}>
+                {lotoNumbers.map((num, index) => (
+                  <View key={index} style={styles.card}>
+                    {/* Numéro */}
+                    <Text style={styles.number}>{num}</Text>
 
-                  {/* Statistiques */}
-                  <View style={styles.stats}>
-                    {/* Dernière sortie */}
-                    <View style={styles.statItem}>
-                      <MaterialIcons name="history" size={20} color="#ffffff" />
-                      <Text style={styles.statText}>
-                        {statsNumeros[index]?.derniereSortie
-                          ? `${calculateExactDrawsSinceLastOut(
-                              statsNumeros[index]?.derniereSortie
-                            )} tirages`
-                          : "Données non disponibles"}
-                      </Text>
-                    </View>
+                    {/* Statistiques */}
+                    <View style={styles.stats}>
+                      {/* Dernière sortie */}
+                      <View style={styles.statItem}>
+                        <MaterialIcons
+                          name="history"
+                          size={20}
+                          color="#ffffff"
+                        />
+                        <Text style={styles.statText}>
+                          {statsNumeros[index]?.derniereSortie
+                            ? `${calculateExactDrawsSinceLastOut(
+                                statsNumeros[index]?.derniereSortie
+                              )} tirages`
+                            : "Données non disponibles"}
+                        </Text>
+                      </View>
 
-                    {/* Pourcentage de sorties */}
-                    <View style={styles.statItem}>
-                      <MaterialIcons
-                        name="pie-chart"
-                        size={20}
-                        color="#ffffff"
-                      />
-                      <Text style={styles.statText}>
-                        {statsNumeros[index]?.pourcentageDeSorties}%
-                      </Text>
+                      {/* Pourcentage de sorties */}
+                      <View style={styles.statItem}>
+                        <MaterialIcons
+                          name="pie-chart"
+                          size={20}
+                          color="#ffffff"
+                        />
+                        <Text style={styles.statText}>
+                          {statsNumeros[index]?.pourcentageDeSorties}%
+                        </Text>
+                      </View>
                     </View>
                   </View>
-                </View>
-              ))}
-            </View>
+                ))}
 
-            {/* Légende pour les icônes */}
-            <View style={styles.legend}>
-              <View style={styles.legendItem}>
-                <MaterialIcons name="history" size={20} color="#ffffff" />
-                <Text style={styles.legendText}>Dernière sortie</Text>
+                {/* Statistiques du numéro chance */}
+                {lotoComplementaire && chanceNumberStats && (
+                  <View style={styles.cardChance}>
+                    <Text style={styles.chanceNumber}>
+                      {lotoComplementaire}
+                    </Text>
+                    <View style={styles.stats}>
+                      <View style={styles.statItem}>
+                        <MaterialIcons
+                          name="history"
+                          size={20}
+                          color="#ffffff"
+                        />
+                        <Text style={styles.statText}>
+                          {calculateExactDrawsSinceLastOut(
+                            chanceNumberStats.derniereSortie
+                          )}{" "}
+                          tirages
+                        </Text>
+                      </View>
+                      <View style={styles.statItem}>
+                        <MaterialIcons
+                          name="pie-chart"
+                          size={20}
+                          color="#ffffff"
+                        />
+                        <Text style={styles.statText}>
+                          {chanceNumberStats.pourcentageDeSorties}%
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                )}
               </View>
-              <View style={styles.legendItem}>
-                <MaterialIcons name="pie-chart" size={20} color="#ffffff" />
-                <Text style={styles.legendText}>% de sorties</Text>
+
+              {/* Légende pour les icônes */}
+              <View style={styles.legend}>
+                <View style={styles.legendItem}>
+                  <MaterialIcons name="history" size={20} color="#ffffff" />
+                  <Text style={styles.legendText}>Dernière sortie</Text>
+                </View>
+                <View style={styles.legendItem}>
+                  <MaterialIcons name="pie-chart" size={20} color="#ffffff" />
+                  <Text style={styles.legendText}>% de sorties</Text>
+                </View>
               </View>
             </View>
-          </View>
-        )}
+          )}
 
         {jeuSelectionne === "euromillions" && (
           <View>
@@ -576,10 +631,25 @@ const styles = StyleSheet.create({
     backgroundColor: "#fe64f7",
     borderRadius: 10,
     padding: 10,
-    margin: 5,
+    //margin: 5,
+    flexBasis: "30%",
+    margin: "1%",
+    alignItems: "center",
+  },
+  cardChance: {
+    backgroundColor: "#ccc",
+    borderRadius: 10,
+    padding: 10,
+    //margin: 5,
+    flexBasis: "30%",
+    margin: "1%",
     alignItems: "center",
   },
   number: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  chanceNumber: {
     fontSize: 24,
     fontWeight: "bold",
   },
