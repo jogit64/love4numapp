@@ -17,6 +17,11 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
 
+import { db } from "../firebaseConfig";
+import { collection, getDocs } from "firebase/firestore";
+
+import { doc, getDoc } from "firebase/firestore";
+
 const { width, height } = Dimensions.get("window");
 
 const Love4NumWidget = () => {
@@ -32,6 +37,7 @@ const Love4NumWidget = () => {
 
   const [eurodreamsNumbers, setEurodreamsNumbers] = useState([]);
   const [eurodreamsDream, setEurodreamsDream] = useState(null);
+  const [statsNumeros, setStatsNumeros] = useState([]);
 
   const GameSelector = ({ onPress, imageSource, label, jeuId }) => (
     <TouchableOpacity
@@ -88,7 +94,7 @@ const Love4NumWidget = () => {
 
   const NOMBRE_D_OR = 1.618033988749895;
 
-  const genererNumerosLoto = (jeu) => {
+  const genererNumerosLoto = async (jeu) => {
     if (!phrase) {
       alert(
         "Veuillez entrer une phrase ou des mots d'amour avant de générer des numéros."
@@ -105,13 +111,39 @@ const Love4NumWidget = () => {
     // Ajuste la graine en utilisant le nombre d'or
     const seedAjustee = (seedBase * NOMBRE_D_OR) % 1; // Utilise le reste de la division pour garder un nombre entre 0 et 1
 
+    const fetchStatsForNumber = async (numero, type) => {
+      try {
+        const docRef = doc(db, "lotoStats", `${numero}_${type}`);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          console.log("Document data:", docSnap.data());
+          return docSnap.data();
+        } else {
+          console.log("No such document!");
+          return null;
+        }
+      } catch (error) {
+        console.error("Error fetching document:", error);
+        return null; // Gérer l'erreur comme vous le souhaitez
+      }
+    };
+
     switch (jeu) {
       case "loto":
         seedrandom(seedAjustee, { global: true });
         const numerosLoto = genererNumerosUniques(1, 49, 5);
+
+        // Assurez-vous d'utiliser Promise.all pour récupérer les statistiques de tous les numéros générés
+        const statsPromises = numerosLoto.map((numero) =>
+          fetchStatsForNumber(numero, "principal")
+        );
+        const resolvedStats = await Promise.all(statsPromises);
+
         const numeroComplementaireLoto = Math.floor(Math.random() * 10) + 1;
         setLotoNumbers(numerosLoto);
         setLotoComplementaire(numeroComplementaireLoto);
+        setStatsNumeros(resolvedStats);
         break;
       case "euromillions":
         seedrandom(seedAjustee, { global: true });
@@ -185,7 +217,7 @@ const Love4NumWidget = () => {
         {/* {result && <Text style={styles.result}>{result}</Text>} */}
 
         {/* Affichage conditionnel en fonction du jeu sélectionné */}
-        {jeuSelectionne === "loto" && (
+        {/* {jeuSelectionne === "loto" && (
           // <View style={{ alignItems: "center", marginTop: 20 }}>
           <View>
             <Text style={styles.textTirage}>Vos numéros pour le Loto</Text>
@@ -200,6 +232,74 @@ const Love4NumWidget = () => {
                   <Text style={{ color: "#ffffff" }}>{lotoComplementaire}</Text>
                 </View>
               )}
+            </View>
+          </View>
+        )} */}
+
+        {/* VERSION 1 Affichage OK mais seult Num sortie et date */}
+        {jeuSelectionne === "loto" && (
+          <View>
+            <Text style={styles.textTirage}>Vos numéros pour le Loto</Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+              {lotoNumbers.map((num, index) => (
+                <View key={index} style={styles.lotoNumeroContainer}>
+                  <View style={styles.lotoNumeros}>
+                    <Text style={{ color: "#ffffff" }}>{num}</Text>
+                  </View>
+                  {/* Nouvelle Vue pour les statistiques séparées */}
+                  {statsNumeros.length > index && (
+                    <View style={styles.lotoStatistiques}>
+                      <Text style={{ color: "#ffffff", fontSize: 12 }}>
+                        Sorties: {statsNumeros[index]?.nombreDeSorties},
+                        Dernière sortie: {statsNumeros[index]?.derniereSortie}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              ))}
+              {lotoComplementaire && (
+                <View style={styles.lotoComplementaireContainer}>
+                  <View style={styles.lotoComplementaire}>
+                    <Text style={{ color: "#ffffff" }}>
+                      {lotoComplementaire}
+                    </Text>
+                  </View>
+                  {/* Affichage des statistiques du numéro complémentaire */}
+                  <View style={styles.lotoStatistiques}>
+                    <Text style={{ color: "#ffffff", fontSize: 12 }}>
+                      {/* Exemple de contenu, ajustez selon vos données */}
+                      Statistique complémentaire...
+                    </Text>
+                  </View>
+                </View>
+              )}
+            </View>
+          </View>
+        )}
+
+        {/* VERSION 2 Affichage OK mais seult % */}
+        {jeuSelectionne === "loto" && (
+          <View>
+            <Text style={styles.textTirage}>Vos numéros pour le Loto</Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+              {lotoNumbers.map((num, index) => (
+                <View key={index} style={styles.lotoNumeros}>
+                  <Text style={{ color: "#ffffff" }}>{num}</Text>
+                </View>
+              ))}
+            </View>
+            {/* Afficher les statistiques séparément */}
+            {lotoComplementaire && (
+              <View style={styles.lotoComplementaire}>
+                <Text style={{ color: "#ffffff" }}>{lotoComplementaire}</Text>
+              </View>
+            )}
+            <View style={{ marginTop: 10 }}>
+              {statsNumeros.map((stat, index) => (
+                <Text key={index} style={{ color: "#ffffff", fontSize: 12 }}>
+                  Numéro {stat.numero}: {stat.pourcentageDeSorties}% de sorties
+                </Text>
+              ))}
             </View>
           </View>
         )}
@@ -452,6 +552,18 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: "center",
     alignItems: "center",
+  },
+
+  lotoNumeroContainer: {
+    alignItems: "center",
+    margin: 5, // Ajustez selon votre mise en page
+  },
+  lotoStatistiques: {
+    // Styles pour le texte des statistiques
+  },
+  lotoComplementaireContainer: {
+    alignItems: "center",
+    margin: 5, // Ajustez selon votre mise en page
   },
 });
 
