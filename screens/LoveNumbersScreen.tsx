@@ -22,6 +22,8 @@ import { collection, getDocs } from "firebase/firestore";
 
 import { doc, getDoc } from "firebase/firestore";
 
+import { calculateDaysBetweenDates } from "../utils/dateUtils";
+
 const { width, height } = Dimensions.get("window");
 
 const Love4NumWidget = () => {
@@ -217,6 +219,8 @@ const Love4NumWidget = () => {
         {/* {result && <Text style={styles.result}>{result}</Text>} */}
 
         {/* Affichage conditionnel en fonction du jeu sélectionné */}
+
+        {/* VERSION 0 sans stats */}
         {/* {jeuSelectionne === "loto" && (
           // <View style={{ alignItems: "center", marginTop: 20 }}>
           <View>
@@ -301,6 +305,68 @@ const Love4NumWidget = () => {
                 </Text>
               ))}
             </View>
+          </View>
+        )}
+
+        {/* VERSION 3 avec nbre de jour % */}
+        {jeuSelectionne === "loto" && (
+          <View>
+            <Text style={styles.textTirage}>Vos numéros pour le Loto</Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+              {lotoNumbers.map((num, index) => (
+                <View key={index} style={styles.lotoNumeros}>
+                  <Text style={{ color: "#ffffff" }}>{num}</Text>
+                </View>
+              ))}
+            </View>
+            {/* Afficher les statistiques séparément */}
+            {lotoComplementaire && (
+              <View style={styles.lotoComplementaire}>
+                <Text style={{ color: "#ffffff" }}>{lotoComplementaire}</Text>
+              </View>
+            )}
+            <View style={{ marginTop: 10 }}>
+              {statsNumeros.map((stat, index) => (
+                <Text key={index} style={{ color: "#ffffff", fontSize: 12 }}>
+                  Numéro {stat.numero}: {stat.pourcentageDeSorties}% de sorties
+                </Text>
+              ))}
+            </View>
+          </View>
+        )}
+
+        {jeuSelectionne === "loto" && (
+          <View>
+            <Text style={styles.textTirage}>Vos numéros pour le Loto</Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+              {lotoNumbers.map((num, index) => (
+                <View key={index} style={styles.lotoNumeroContainer}>
+                  <View style={styles.lotoNumeros}>
+                    <Text style={{ color: "#ffffff" }}>{num}</Text>
+                  </View>
+                  {/* Affichez ici les statistiques pour chaque numéro si disponibles */}
+                  {statsNumeros.length > index &&
+                    statsNumeros[index]?.derniereSortie && (
+                      <View style={styles.lotoStatistiques}>
+                        <Text style={{ color: "#ffffff", fontSize: 12 }}>
+                          Sorties: {statsNumeros[index]?.nombreDeSorties},
+                          Dernière sortie: il y a{" "}
+                          {calculateDaysBetweenDates(
+                            statsNumeros[index]?.derniereSortie
+                          )}{" "}
+                          jours
+                        </Text>
+                      </View>
+                    )}
+                </View>
+              ))}
+            </View>
+            {/* Affichage du numéro complémentaire si nécessaire */}
+            {lotoComplementaire && (
+              <View style={styles.lotoComplementaire}>
+                <Text style={{ color: "#ffffff" }}>{lotoComplementaire}</Text>
+              </View>
+            )}
           </View>
         )}
 
