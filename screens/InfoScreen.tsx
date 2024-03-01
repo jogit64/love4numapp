@@ -73,7 +73,7 @@ const InfoScreen = () => {
         </Text>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate("LoveNumbers")}
+          onPress={() => navigation.navigate("Jouer")}
         >
           <Ionicons name="heart" size={20} color="#FFFFFF" />
           {/* Icon inside the button */}
