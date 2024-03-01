@@ -9,6 +9,7 @@ import {
   Image,
   Dimensions,
 } from "react-native";
+import AppStyles from "../styles/AppStyles";
 import { StatusBar } from "expo-status-bar";
 import seedrandom from "seedrandom";
 
@@ -24,6 +25,7 @@ import { doc, getDoc } from "firebase/firestore";
 
 import { calculateExactDrawsSinceLastOut } from "../utils/dateUtils";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import LotoStats from "../components/LotoDisplay";
 
 const { width, height } = Dimensions.get("window");
 
@@ -60,23 +62,25 @@ const Love4NumWidget = () => {
         onPress();
       }}
       style={[
-        styles.gameSelector,
-        jeuSelectionne === jeuId ? styles.selectedGame : styles.unselectedGame,
+        AppStyles.gameSelector,
+        jeuSelectionne === jeuId
+          ? AppStyles.selectedGame
+          : AppStyles.unselectedGame,
       ]}
     >
-      <Image source={imageSource} style={styles.gameImage} />
-      <Text style={styles.gameLabel}>{label}</Text>
+      <Image source={imageSource} style={AppStyles.gameImage} />
+      <Text style={AppStyles.gameLabel}>{label}</Text>
     </TouchableOpacity>
   );
 
   const EtoileEuromillions = ({ numero }) => {
     return (
-      <View style={styles.etoileContainer}>
+      <View style={AppStyles.etoileContainer}>
         <Image
           source={require("../assets/etoile5.png")}
-          style={styles.etoileBackground}
+          style={AppStyles.etoileBackground}
         />
-        <Text style={styles.etoileNumero}>{numero}</Text>
+        <Text style={AppStyles.etoileNumero}>{numero}</Text>
       </View>
     );
   };
@@ -188,20 +192,20 @@ const Love4NumWidget = () => {
   };
 
   return (
-    <ScrollView style={styles.scrollView} onLayout={onLayoutRootView}>
+    <ScrollView style={AppStyles.scrollView} onLayout={onLayoutRootView}>
       <StatusBar style="light" />
-      <View style={styles.content}>
+      <View style={AppStyles.content}>
         <Image
           source={require("../assets/simplelogolove4num.png")}
-          style={styles.image}
+          style={AppStyles.image}
           resizeMode="contain" // ou "contain", "stretch", "repeat", "center"
         />
-        <Text style={styles.para}>
+        <Text style={AppStyles.para}>
           Entrez une phrase ou des mots d'amour pour voir comment l'univers
           transforme votre message en numéros de chance.
         </Text>
         <TextInput
-          style={styles.input}
+          style={AppStyles.input}
           placeholder="Entrez votre phrase positive"
           placeholderTextColor="#e0b0ff"
           cursorColor={"#e0b0ff"}
@@ -211,10 +215,10 @@ const Love4NumWidget = () => {
         <TouchableOpacity onPress={handleReset}>
           <MaterialIcons name="refresh" size={24} color="#fff" />
         </TouchableOpacity>
-        <Text style={styles.para}>
+        <Text style={AppStyles.para}>
           Choisissez le tirage pour générer vos numéros d'amour !
         </Text>
-        <View style={styles.gameSelection}>
+        <View style={AppStyles.gameSelection}>
           <GameSelector
             onPress={() => genererNumerosLoto("loto")}
             imageSource={require("../assets/loto.png")}
@@ -239,127 +243,22 @@ const Love4NumWidget = () => {
         {jeuSelectionne === "loto" &&
           lotoComplementaire &&
           chanceNumberStats && (
-            <View>
-              {/* //* Affichage des numéros de loto */}
-              <Text style={styles.textTirage}>Vos numéros pour le Loto</Text>
-              <View style={{ flexDirection: "row", justifyContent: "center" }}>
-                {lotoNumbers.map((num, index) => (
-                  <View key={index} style={styles.lotoNumeros}>
-                    <Text style={{ color: "#ffffff" }}>{num}</Text>
-                  </View>
-                ))}
-
-                <View style={styles.lotoComplementaire}>
-                  <Text style={{ color: "#ffffff" }}>{lotoComplementaire}</Text>
-                </View>
-              </View>
-
-              {/* //* Affichage des statistiques */}
-              <View style={styles.statBloc}>
-                <Text style={styles.textTirage}>
-                  Vos Statistiques de Chance
-                </Text>
-                <Text style={styles.statExplanation}>
-                  Basé sur les tirages depuis le 4 novembre 2019.
-                </Text>
-
-                <View style={styles.cardContainer}>
-                  {lotoNumbers.map((num, index) => (
-                    <View key={index} style={styles.card}>
-                      {/* Numéro */}
-                      <Text style={styles.number}>{num}</Text>
-
-                      {/* Statistiques */}
-                      <View style={styles.stats}>
-                        {/* Dernière sortie */}
-                        <View style={styles.statItem}>
-                          <MaterialIcons
-                            name="history"
-                            size={20}
-                            color="#ffffff"
-                          />
-                          <Text style={styles.statText}>
-                            {statsNumeros[index]?.derniereSortie
-                              ? `${calculateExactDrawsSinceLastOut(
-                                  statsNumeros[index]?.derniereSortie
-                                )} tirages`
-                              : "Données non disponibles"}
-                          </Text>
-                        </View>
-
-                        {/* Pourcentage de sorties */}
-                        <View style={styles.statItem}>
-                          <MaterialIcons
-                            name="pie-chart"
-                            size={20}
-                            color="#ffffff"
-                          />
-                          <Text style={styles.statText}>
-                            {statsNumeros[index]?.pourcentageDeSorties}%
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                  ))}
-
-                  {/* Statistiques du numéro chance */}
-                  {lotoComplementaire && chanceNumberStats && (
-                    <View style={styles.cardChance}>
-                      <Text style={styles.chanceNumber}>
-                        {lotoComplementaire}
-                      </Text>
-                      <View style={styles.stats}>
-                        <View style={styles.statItem}>
-                          <MaterialIcons
-                            name="history"
-                            size={20}
-                            color="#ffffff"
-                          />
-                          <Text style={styles.statText}>
-                            {calculateExactDrawsSinceLastOut(
-                              chanceNumberStats.derniereSortie
-                            )}{" "}
-                            tirages
-                          </Text>
-                        </View>
-                        <View style={styles.statItem}>
-                          <MaterialIcons
-                            name="pie-chart"
-                            size={20}
-                            color="#ffffff"
-                          />
-                          <Text style={styles.statText}>
-                            {chanceNumberStats.pourcentageDeSorties}%
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                  )}
-                </View>
-
-                {/* //* Icônes et légende du bas*/}
-                <View style={styles.legend}>
-                  <View style={styles.legendItem}>
-                    <MaterialIcons name="history" size={20} color="#ffffff" />
-                    <Text style={styles.legendText}>Dernière sortie</Text>
-                  </View>
-                  <View style={styles.legendItem}>
-                    <MaterialIcons name="pie-chart" size={20} color="#ffffff" />
-                    <Text style={styles.legendText}>% de sorties</Text>
-                  </View>
-                </View>
-              </View>
-            </View>
+            <LotoStats
+              lotoNumbers={lotoNumbers}
+              lotoComplementaire={lotoComplementaire}
+              statsNumeros={statsNumeros}
+              chanceNumberStats={chanceNumberStats}
+            />
           )}
 
         {jeuSelectionne === "euromillions" && (
           <View>
-            <Text style={styles.textTirage}>
+            <Text style={AppStyles.textTirage}>
               Vos numéros pour l'Euromillions
             </Text>
             <View style={{ flexDirection: "row" }}>
               {euromillionsNumbers.map((num, index) => (
-                <View key={index} style={styles.euromillionsNumeros}>
+                <View key={index} style={AppStyles.euromillionsNumeros}>
                   <Text style={{ color: "#ffffff" }}>{num}</Text>
                 </View>
               ))}
@@ -371,15 +270,17 @@ const Love4NumWidget = () => {
         )}
         {jeuSelectionne === "eurodreams" && (
           <View>
-            <Text style={styles.textTirage}>Vos numéros pour l'Eurodreams</Text>
+            <Text style={AppStyles.textTirage}>
+              Vos numéros pour l'Eurodreams
+            </Text>
             <View style={{ flexDirection: "row" }}>
               {eurodreamsNumbers.map((num, index) => (
-                <View key={index} style={styles.eurodreamsNumeros}>
+                <View key={index} style={AppStyles.eurodreamsNumeros}>
                   <Text style={{ color: "#ffffff" }}>{num}</Text>
                 </View>
               ))}
               {eurodreamsDream && (
-                <View style={styles.eurodreamsDream}>
+                <View style={AppStyles.eurodreamsDream}>
                   <Text style={{ color: "#ffffff" }}>{eurodreamsDream}</Text>
                 </View>
               )}
@@ -392,105 +293,97 @@ const Love4NumWidget = () => {
 };
 
 const styles = StyleSheet.create({
-  scrollView: {
-    flex: 1,
-    //backgroundColor: "#fb21ff", // Un fond violet vif pour l'énergie
-    backgroundColor: "#0F052C", // Un fond violet vif pour l'énergie
-    marginBottom: 40,
-  },
-  content: {
-    flexGrow: 1,
-    justifyContent: "flex-start",
-    alignItems: "center",
-    minHeight: height,
-    //padding: 20,
-    paddingTop: 10,
-  },
-
-  image: {
-    width: width * 0.6,
-    height: height * 0.1,
-    // width: 80,
-    // height: 80,
-    //backgroundColor: "#ccc",
-    marginTop: 50,
-    marginBottom: 20,
-  },
-
-  title: {
-    fontSize: 26,
-    fontFamily: "hennypennyregular",
-    //color: "#FFEB3B",
-    color: "#e0b0ff",
-    textAlign: "center",
-    // marginBottom: 5,
-    //marginTop: 5,
-  },
-  para: {
-    fontSize: 16,
-    //fontFamily: "lemonregular",
-    //fontFamily: "ralewaythin",
-    //fontFamily: "ralewayextraBold",
-    fontFamily: "robotoregular",
-    //color: "#e0b0ff",
-    color: "#fff",
-    textAlign: "center",
-    marginBottom: 15,
-    marginTop: 5,
-    marginHorizontal: 20,
-    lineHeight: 25,
-  },
-
-  input: {
-    width: width - 40,
-    padding: 10,
-    marginBottom: 20,
-    color: "#e0b0ff",
-    //borderRadius: 25,
-    backgroundColor: "#1b1138",
-    borderBottomWidth: 0.2,
-    borderBottomColor: "#bfa2cb",
-    textAlign: "center",
-  },
-
-  textTirage: {
-    fontSize: 16,
-    //fontFamily: "hennypennyregular",
-    fontFamily: "robotoregular",
-    //color: "#FFEB3B",
-    color: "#FFF",
-    textAlign: "center",
-    marginBottom: 5,
-    marginTop: 25,
-    marginHorizontal: 20,
-  },
-  gameSelection: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    width: "100%",
-    height: 80,
-  },
-
-  gameSelector: {
-    alignItems: "center",
-    justifyContent: "center",
-    //backgroundColor: "#00E676",
-    //padding: 10,
-    paddingHorizontal: 6,
-    borderRadius: 15,
-  },
-
-  gameImage: {
-    width: 100,
-    height: 55,
-    resizeMode: "contain",
-  },
-
-  gameLabel: {
-    color: "#0F052C",
-    fontSize: 12,
-  },
-
+  // scrollView: {
+  //   flex: 1,
+  //   //backgroundColor: "#fb21ff", // Un fond violet vif pour l'énergie
+  //   backgroundColor: "#0F052C", // Un fond violet vif pour l'énergie
+  //   marginBottom: 40,
+  // },
+  // content: {
+  //   flexGrow: 1,
+  //   justifyContent: "flex-start",
+  //   alignItems: "center",
+  //   minHeight: height,
+  //   //padding: 20,
+  //   paddingTop: 10,
+  // },
+  // image: {
+  //   width: width * 0.6,
+  //   height: height * 0.1,
+  //   // width: 80,
+  //   // height: 80,
+  //   //backgroundColor: "#ccc",
+  //   marginTop: 50,
+  //   marginBottom: 20,
+  // },
+  // title: {
+  //   fontSize: 26,
+  //   fontFamily: "hennypennyregular",
+  //   //color: "#FFEB3B",
+  //   color: "#e0b0ff",
+  //   textAlign: "center",
+  //   // marginBottom: 5,
+  //   //marginTop: 5,
+  // },
+  // para: {
+  //   fontSize: 16,
+  //   //fontFamily: "lemonregular",
+  //   //fontFamily: "ralewaythin",
+  //   //fontFamily: "ralewayextraBold",
+  //   fontFamily: "robotoregular",
+  //   //color: "#e0b0ff",
+  //   color: "#fff",
+  //   textAlign: "center",
+  //   marginBottom: 15,
+  //   marginTop: 5,
+  //   marginHorizontal: 20,
+  //   lineHeight: 25,
+  // },
+  // input: {
+  //   width: width - 40,
+  //   padding: 10,
+  //   marginBottom: 20,
+  //   color: "#e0b0ff",
+  //   //borderRadius: 25,
+  //   backgroundColor: "#1b1138",
+  //   borderBottomWidth: 0.2,
+  //   borderBottomColor: "#bfa2cb",
+  //   textAlign: "center",
+  // },
+  // textTirage: {
+  //   fontSize: 16,
+  //   //fontFamily: "hennypennyregular",
+  //   fontFamily: "robotoregular",
+  //   //color: "#FFEB3B",
+  //   color: "#FFF",
+  //   textAlign: "center",
+  //   marginBottom: 5,
+  //   marginTop: 25,
+  //   marginHorizontal: 20,
+  // },
+  // gameSelection: {
+  //   flexDirection: "row",
+  //   justifyContent: "space-evenly",
+  //   width: "100%",
+  //   height: 80,
+  // },
+  // gameSelector: {
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  //   //backgroundColor: "#00E676",
+  //   //padding: 10,
+  //   paddingHorizontal: 6,
+  //   borderRadius: 15,
+  // },
+  // gameImage: {
+  //   width: 100,
+  //   height: 55,
+  //   resizeMode: "contain",
+  // },
+  // gameLabel: {
+  //   color: "#0F052C",
+  //   fontSize: 12,
+  // },
   //   result: {
   //     marginTop: 20,
   //     fontSize: 18,
@@ -498,190 +391,180 @@ const styles = StyleSheet.create({
   //     fontWeight: "bold",
   //     padding: 10,
   //   },
-
-  selectedGame: {
-    backgroundColor: "#ADD8E6", // Bleu clair pour le jeu sélectionné
-    // Autres styles nécessaires pour un jeu sélectionné
-  },
-
-  unselectedGame: {
-    backgroundColor: "#00E676", // Vert (ou tout autre couleur de votre choix) pour les jeux non sélectionnés
-    // Autres styles nécessaires pour un jeu non sélectionné
-  },
-
-  lotoNumeros: {
-    backgroundColor: "#00a2d9", // --loto-bg-color
-    color: "#ffffff",
-    borderRadius: 20, // Pour obtenir un cercle parfait, assurez-vous que width et height sont égaux et borderRadius est la moitié
-    padding: 10,
-    margin: 5,
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  lotoComplementaire: {
-    backgroundColor: "#ea3946", // --loto-complementary-bg-color
-    color: "#ffffff",
-    borderRadius: 20,
-    padding: 10,
-    margin: 5,
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  // Styles pour les numéros de l'Euromillions
-  euromillionsNumeros: {
-    backgroundColor: "#001367", // --euromillions-bg-color
-    color: "#ffffff",
-    borderRadius: 20,
-    padding: 10,
-    margin: 5,
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  etoileContainer: {
-    width: 50, // Ajustez la taille selon votre design
-    height: 50, // Ajustez la taille selon votre design
-    justifyContent: "center",
-    alignItems: "center",
-    position: "relative",
-  },
-  etoileBackground: {
-    width: "100%",
-    height: "100%",
-    position: "absolute", // Permet au texte de s'afficher au-dessus de l'image
-  },
-  etoileNumero: {
-    color: "#ffffff", // Ajustez la couleur du texte si nécessaire
-    fontWeight: "bold",
-    fontSize: 20, // Ajustez la taille du texte selon votre design
-  },
-
-  // Styles pour les numéros de l'Eurodreams
-  eurodreamsNumeros: {
-    backgroundColor: "#781ea6", // --eurodreams-bg-color
-    color: "#ffffff",
-    borderRadius: 20,
-    padding: 10,
-    margin: 5,
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  eurodreamsDream: {
-    backgroundColor: "#ff3c69", // --eurodreams-dream-bg-color
-    color: "#ffffff",
-    borderRadius: 20,
-    padding: 10,
-    margin: 5,
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  lotoNumeroContainer: {
-    alignItems: "center",
-    margin: 5, // Ajustez selon votre mise en page
-  },
-  lotoStatistiques: {
-    // Styles pour le texte des statistiques
-  },
-  lotoComplementaireContainer: {
-    alignItems: "center",
-    margin: 5, // Ajustez selon votre mise en page
-  },
-
-  statBloc: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-around",
-    marginBottom: 60,
-  },
-
-  statExplanation: {
-    color: "grey",
-    fontFamily: "robotoregular",
-    fontSize: 14,
-    //color: "#FFEB3B",
-    textAlign: "center",
-    marginBottom: 5,
-  },
-
-  cardContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-around",
-  },
-  card: {
-    backgroundColor: "#fe64f7",
-    borderRadius: 10,
-    padding: 10,
-    //margin: 5,
-    flexBasis: "30%",
-    margin: "1%",
-    alignItems: "center",
-  },
-  cardChance: {
-    backgroundColor: "#ccc",
-    borderRadius: 10,
-    padding: 10,
-    //margin: 5,
-    flexBasis: "30%",
-    margin: "1%",
-    alignItems: "center",
-  },
-  number: {
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  chanceNumber: {
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  stats: {
-    marginTop: 5,
-  },
-  statText: {
-    fontSize: 14,
-    fontFamily: "robotoregular",
-  },
-  legend: {
-    marginTop: 20,
-    alignItems: "center",
-  },
-  legendItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 5,
-  },
-  legendText: {
-    marginLeft: 10,
-    color: "#ffffff",
-    fontSize: 16,
-  },
+  // selectedGame: {
+  //   backgroundColor: "#ADD8E6", // Bleu clair pour le jeu sélectionné
+  //   // Autres styles nécessaires pour un jeu sélectionné
+  // },
+  // unselectedGame: {
+  //   backgroundColor: "#00E676", // Vert (ou tout autre couleur de votre choix) pour les jeux non sélectionnés
+  //   // Autres styles nécessaires pour un jeu non sélectionné
+  // },
+  // lotoNumeros: {
+  //   backgroundColor: "#00a2d9", // --loto-bg-color
+  //   color: "#ffffff",
+  //   borderRadius: 20, // Pour obtenir un cercle parfait, assurez-vous que width et height sont égaux et borderRadius est la moitié
+  //   padding: 10,
+  //   margin: 5,
+  //   fontSize: 20,
+  //   fontWeight: "bold",
+  //   textAlign: "center",
+  //   width: 40,
+  //   height: 40,
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  // },
+  // lotoComplementaire: {
+  //   backgroundColor: "#ea3946", // --loto-complementary-bg-color
+  //   color: "#ffffff",
+  //   borderRadius: 20,
+  //   padding: 10,
+  //   margin: 5,
+  //   fontSize: 20,
+  //   fontWeight: "bold",
+  //   textAlign: "center",
+  //   width: 40,
+  //   height: 40,
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  // },
+  // // Styles pour les numéros de l'Euromillions
+  // euromillionsNumeros: {
+  //   backgroundColor: "#001367", // --euromillions-bg-color
+  //   color: "#ffffff",
+  //   borderRadius: 20,
+  //   padding: 10,
+  //   margin: 5,
+  //   fontSize: 20,
+  //   fontWeight: "bold",
+  //   textAlign: "center",
+  //   width: 40,
+  //   height: 40,
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  // },
+  // etoileContainer: {
+  //   width: 50, // Ajustez la taille selon votre design
+  //   height: 50, // Ajustez la taille selon votre design
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  //   position: "relative",
+  // },
+  // etoileBackground: {
+  //   width: "100%",
+  //   height: "100%",
+  //   position: "absolute", // Permet au texte de s'afficher au-dessus de l'image
+  // },
+  // etoileNumero: {
+  //   color: "#ffffff", // Ajustez la couleur du texte si nécessaire
+  //   fontWeight: "bold",
+  //   fontSize: 20, // Ajustez la taille du texte selon votre design
+  // },
+  // // Styles pour les numéros de l'Eurodreams
+  // eurodreamsNumeros: {
+  //   backgroundColor: "#781ea6", // --eurodreams-bg-color
+  //   color: "#ffffff",
+  //   borderRadius: 20,
+  //   padding: 10,
+  //   margin: 5,
+  //   fontSize: 20,
+  //   fontWeight: "bold",
+  //   textAlign: "center",
+  //   width: 40,
+  //   height: 40,
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  // },
+  // eurodreamsDream: {
+  //   backgroundColor: "#ff3c69", // --eurodreams-dream-bg-color
+  //   color: "#ffffff",
+  //   borderRadius: 20,
+  //   padding: 10,
+  //   margin: 5,
+  //   fontSize: 20,
+  //   fontWeight: "bold",
+  //   textAlign: "center",
+  //   width: 40,
+  //   height: 40,
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  // },
+  // lotoNumeroContainer: {
+  //   alignItems: "center",
+  //   margin: 5, // Ajustez selon votre mise en page
+  // },
+  // lotoStatistiques: {
+  //   // Styles pour le texte des statistiques
+  // },
+  // lotoComplementaireContainer: {
+  //   alignItems: "center",
+  //   margin: 5, // Ajustez selon votre mise en page
+  // },
+  // statBloc: {
+  //   flexDirection: "row",
+  //   flexWrap: "wrap",
+  //   justifyContent: "space-around",
+  //   marginBottom: 60,
+  // },
+  // statExplanation: {
+  //   color: "grey",
+  //   fontFamily: "robotoregular",
+  //   fontSize: 14,
+  //   //color: "#FFEB3B",
+  //   textAlign: "center",
+  //   marginBottom: 5,
+  // },
+  // cardContainer: {
+  //   flexDirection: "row",
+  //   flexWrap: "wrap",
+  //   justifyContent: "space-around",
+  // },
+  // card: {
+  //   backgroundColor: "#fe64f7",
+  //   borderRadius: 10,
+  //   padding: 10,
+  //   //margin: 5,
+  //   flexBasis: "30%",
+  //   margin: "1%",
+  //   alignItems: "center",
+  // },
+  // cardChance: {
+  //   backgroundColor: "#ccc",
+  //   borderRadius: 10,
+  //   padding: 10,
+  //   //margin: 5,
+  //   flexBasis: "30%",
+  //   margin: "1%",
+  //   alignItems: "center",
+  // },
+  // number: {
+  //   fontSize: 24,
+  //   fontWeight: "bold",
+  // },
+  // chanceNumber: {
+  //   fontSize: 24,
+  //   fontWeight: "bold",
+  // },
+  // stats: {
+  //   marginTop: 5,
+  // },
+  // statText: {
+  //   fontSize: 14,
+  //   fontFamily: "robotoregular",
+  // },
+  // legend: {
+  //   marginTop: 20,
+  //   alignItems: "center",
+  // },
+  // legendItem: {
+  //   flexDirection: "row",
+  //   alignItems: "center",
+  //   marginVertical: 5,
+  // },
+  // legendText: {
+  //   marginLeft: 10,
+  //   color: "#ffffff",
+  //   fontSize: 16,
+  // },
 });
 
 export default Love4NumWidget;

@@ -1,6 +1,6 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Ionicons } from "@expo/vector-icons"; // Assurez-vous d'avoir installé @expo/vector-icons
+import { Ionicons } from "@expo/vector-icons";
 import LoveNumbersScreen from "./screens/LoveNumbersScreen";
 import InfoScreen from "./screens/InfoScreen";
 
@@ -12,31 +12,34 @@ export default function AppNavigation() {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
+          let iconColor = focused ? "#0F052C" : "#B6B6B6"; // Exemple de changement de couleur
 
-          // Ajustement des noms d'icône selon le nom de l'itinéraire
-          if (route.name === "LoveNumbers") {
+          if (route.name === "Jouer") {
             iconName = focused ? "heart" : "heart-outline";
-          } else if (route.name === "Info") {
-            iconName = focused
-              ? "information-circle"
-              : "information-circle-outline";
+          } else if (route.name === "Accueil") {
+            iconName = focused ? "home" : "home-outline"; // Changement pour une icône d'accueil
           }
 
-          // Retourne l'icône avec le bon nom
-          return <Ionicons name={iconName} size={size} color={color} />;
+          // Utilisez iconColor pour la couleur
+          return <Ionicons name={iconName} size={size} color={iconColor} />;
         },
-        tabBarShowLabel: false,
         tabBarStyle: {
-          backgroundColor: "#3d1961",
+          backgroundColor: "#FF48C4",
           position: "absolute",
-          borderTopWidth: 0,
+          borderTopWidth: 1,
+          borderTopColor: "#FF48C4",
           height: 60,
+        },
+        tabBarLabelStyle: {
+          fontSize: 16,
+          color: "#fff",
+          marginBottom: 5,
         },
         headerShown: false,
       })}
     >
-      <Tab.Screen name="Info" component={InfoScreen} />
-      <Tab.Screen name="LoveNumbers" component={LoveNumbersScreen} />
+      <Tab.Screen name="Accueil" component={InfoScreen} />
+      <Tab.Screen name="Jouer" component={LoveNumbersScreen} />
     </Tab.Navigator>
   );
 }

@@ -77,7 +77,7 @@ const InfoScreen = () => {
         >
           <Ionicons name="heart" size={20} color="#FFFFFF" />
           {/* Icon inside the button */}
-          <Text style={styles.buttonText}>Commencez à transformer</Text>
+          <Text style={styles.buttonText}>C'est parti !</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
