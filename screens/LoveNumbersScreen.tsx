@@ -29,6 +29,15 @@ const { width, height } = Dimensions.get("window");
 
 const Love4NumWidget = () => {
   // const [isReady, setIsReady] = useState(false);
+
+  const handleReset = () => {
+    setLotoNumbers([]); // Réinitialisez à un tableau vide ou la valeur initiale
+    setLotoComplementaire(null); // Réinitialisez à null ou la valeur initiale
+    setStatsNumeros([]); // Réinitialisez à un tableau vide ou la valeur initiale
+    setChanceNumberStats(null); // Réinitialisez à null ou la valeur initiale
+    setPhrase("");
+  };
+
   const [phrase, setPhrase] = useState("");
   const [jeuSelectionne, setJeuSelectionne] = useState<string | null>(null);
 
@@ -138,31 +147,29 @@ const Love4NumWidget = () => {
       case "loto":
         seedrandom(seedAjustee, { global: true });
         const numerosLoto = genererNumerosUniques(1, 49, 5);
+        const numeroComplementaireLoto = Math.floor(Math.random() * 10) + 1;
 
-        // Assurez-vous d'utiliser Promise.all pour récupérer les statistiques de tous les numéros générés
+        // Récupération des statistiques pour tous les numéros, y compris le numéro complémentaire
         const statsPromises = numerosLoto.map((numero) =>
           fetchStatsForNumber(numero, "principal")
         );
+        statsPromises.push(
+          fetchStatsForNumber(numeroComplementaireLoto, "chance")
+        );
+
         const resolvedStats = await Promise.all(statsPromises);
 
-        const numeroComplementaireLoto = Math.floor(Math.random() * 10) + 1;
+        // Le dernier élément du tableau resolvedStats est pour le numéro complémentaire
+        const chanceNumberStats = resolvedStats.pop(); // Récupère et enlève les stats du numéro complémentaire
+
+        // Mettre à jour tous les états en une seule opération pour éviter des rendus partiels
         setLotoNumbers(numerosLoto);
         setLotoComplementaire(numeroComplementaireLoto);
         setStatsNumeros(resolvedStats);
+        setChanceNumberStats(chanceNumberStats);
 
-        // Récupération des statistiques pour le numéro complémentaire
-        const numeroComplementaireStatsPromise = fetchStatsForNumber(
-          lotoComplementaire,
-          "chance"
-        );
-        numeroComplementaireStatsPromise
-          .then((chanceStats) => {
-            setChanceNumberStats(chanceStats);
-          })
-          .catch((error) => {
-            console.error("Error fetching stats for chance number", error);
-          });
         break;
+
       case "euromillions":
         seedrandom(seedAjustee, { global: true });
         const numerosEuromillions = genererNumerosUniques(1, 50, 5);
@@ -201,6 +208,9 @@ const Love4NumWidget = () => {
           value={phrase}
           onChangeText={setPhrase}
         />
+        <TouchableOpacity onPress={handleReset}>
+          <MaterialIcons name="refresh" size={24} color="#fff" />
+        </TouchableOpacity>
         <Text style={styles.para}>
           Choisissez le tirage pour générer vos numéros d'amour !
         </Text>
@@ -225,120 +235,118 @@ const Love4NumWidget = () => {
           />
         </View>
 
-        {/* Affichage conditionnel en fonction du jeu sélectionné */}
-        {/* VERSION 0 sans stats */}
-        {jeuSelectionne === "loto" && (
-          // <View style={{ alignItems: "center", marginTop: 20 }}>
-          <View>
-            <Text style={styles.textTirage}>Vos numéros pour le Loto</Text>
-            <View style={{ flexDirection: "row" }}>
-              {lotoNumbers.map((num, index) => (
-                <View key={index} style={styles.lotoNumeros}>
-                  <Text style={{ color: "#ffffff" }}>{num}</Text>
-                </View>
-              ))}
-              {lotoComplementaire && (
-                <View style={styles.lotoComplementaire}>
-                  <Text style={{ color: "#ffffff" }}>{lotoComplementaire}</Text>
-                </View>
-              )}
-            </View>
-          </View>
-        )}
-
-        {/* STATISTIQUES */}
+        {/* //todo CHOIX LOTO */}
         {jeuSelectionne === "loto" &&
           lotoComplementaire &&
           chanceNumberStats && (
-            <View style={styles.statBloc}>
-              <Text style={styles.textTirage}>Vos Statistiques de Chance</Text>
-              <Text style={styles.statExplanation}>
-                Basé sur les tirages depuis le 4 novembre 2019.
-              </Text>
-
-              <View style={styles.cardContainer}>
+            <View>
+              {/* //* Affichage des numéros de loto */}
+              <Text style={styles.textTirage}>Vos numéros pour le Loto</Text>
+              <View style={{ flexDirection: "row", justifyContent: "center" }}>
                 {lotoNumbers.map((num, index) => (
-                  <View key={index} style={styles.card}>
-                    {/* Numéro */}
-                    <Text style={styles.number}>{num}</Text>
-
-                    {/* Statistiques */}
-                    <View style={styles.stats}>
-                      {/* Dernière sortie */}
-                      <View style={styles.statItem}>
-                        <MaterialIcons
-                          name="history"
-                          size={20}
-                          color="#ffffff"
-                        />
-                        <Text style={styles.statText}>
-                          {statsNumeros[index]?.derniereSortie
-                            ? `${calculateExactDrawsSinceLastOut(
-                                statsNumeros[index]?.derniereSortie
-                              )} tirages`
-                            : "Données non disponibles"}
-                        </Text>
-                      </View>
-
-                      {/* Pourcentage de sorties */}
-                      <View style={styles.statItem}>
-                        <MaterialIcons
-                          name="pie-chart"
-                          size={20}
-                          color="#ffffff"
-                        />
-                        <Text style={styles.statText}>
-                          {statsNumeros[index]?.pourcentageDeSorties}%
-                        </Text>
-                      </View>
-                    </View>
+                  <View key={index} style={styles.lotoNumeros}>
+                    <Text style={{ color: "#ffffff" }}>{num}</Text>
                   </View>
                 ))}
 
-                {/* Statistiques du numéro chance */}
-                {lotoComplementaire && chanceNumberStats && (
-                  <View style={styles.cardChance}>
-                    <Text style={styles.chanceNumber}>
-                      {lotoComplementaire}
-                    </Text>
-                    <View style={styles.stats}>
-                      <View style={styles.statItem}>
-                        <MaterialIcons
-                          name="history"
-                          size={20}
-                          color="#ffffff"
-                        />
-                        <Text style={styles.statText}>
-                          {calculateExactDrawsSinceLastOut(
-                            chanceNumberStats.derniereSortie
-                          )}{" "}
-                          tirages
-                        </Text>
-                      </View>
-                      <View style={styles.statItem}>
-                        <MaterialIcons
-                          name="pie-chart"
-                          size={20}
-                          color="#ffffff"
-                        />
-                        <Text style={styles.statText}>
-                          {chanceNumberStats.pourcentageDeSorties}%
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                )}
+                <View style={styles.lotoComplementaire}>
+                  <Text style={{ color: "#ffffff" }}>{lotoComplementaire}</Text>
+                </View>
               </View>
 
-              {/* Légende pour les icônes */}
-              <View style={styles.legend}>
-                <View style={styles.legendItem}>
-                  <MaterialIcons name="history" size={20} color="#ffffff" />
-                  <Text style={styles.legendText}>Dernière sortie</Text>
+              {/* //* Affichage des statistiques */}
+              <View style={styles.statBloc}>
+                <Text style={styles.textTirage}>
+                  Vos Statistiques de Chance
+                </Text>
+                <Text style={styles.statExplanation}>
+                  Basé sur les tirages depuis le 4 novembre 2019.
+                </Text>
+
+                <View style={styles.cardContainer}>
+                  {lotoNumbers.map((num, index) => (
+                    <View key={index} style={styles.card}>
+                      {/* Numéro */}
+                      <Text style={styles.number}>{num}</Text>
+
+                      {/* Statistiques */}
+                      <View style={styles.stats}>
+                        {/* Dernière sortie */}
+                        <View style={styles.statItem}>
+                          <MaterialIcons
+                            name="history"
+                            size={20}
+                            color="#ffffff"
+                          />
+                          <Text style={styles.statText}>
+                            {statsNumeros[index]?.derniereSortie
+                              ? `${calculateExactDrawsSinceLastOut(
+                                  statsNumeros[index]?.derniereSortie
+                                )} tirages`
+                              : "Données non disponibles"}
+                          </Text>
+                        </View>
+
+                        {/* Pourcentage de sorties */}
+                        <View style={styles.statItem}>
+                          <MaterialIcons
+                            name="pie-chart"
+                            size={20}
+                            color="#ffffff"
+                          />
+                          <Text style={styles.statText}>
+                            {statsNumeros[index]?.pourcentageDeSorties}%
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                  ))}
+
+                  {/* Statistiques du numéro chance */}
+                  {lotoComplementaire && chanceNumberStats && (
+                    <View style={styles.cardChance}>
+                      <Text style={styles.chanceNumber}>
+                        {lotoComplementaire}
+                      </Text>
+                      <View style={styles.stats}>
+                        <View style={styles.statItem}>
+                          <MaterialIcons
+                            name="history"
+                            size={20}
+                            color="#ffffff"
+                          />
+                          <Text style={styles.statText}>
+                            {calculateExactDrawsSinceLastOut(
+                              chanceNumberStats.derniereSortie
+                            )}{" "}
+                            tirages
+                          </Text>
+                        </View>
+                        <View style={styles.statItem}>
+                          <MaterialIcons
+                            name="pie-chart"
+                            size={20}
+                            color="#ffffff"
+                          />
+                          <Text style={styles.statText}>
+                            {chanceNumberStats.pourcentageDeSorties}%
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                  )}
                 </View>
-                <View style={styles.legendItem}>
-                  <MaterialIcons name="pie-chart" size={20} color="#ffffff" />
-                  <Text style={styles.legendText}>% de sorties</Text>
+
+                {/* //* Icônes et légende du bas*/}
+                <View style={styles.legend}>
+                  <View style={styles.legendItem}>
+                    <MaterialIcons name="history" size={20} color="#ffffff" />
+                    <Text style={styles.legendText}>Dernière sortie</Text>
+                  </View>
+                  <View style={styles.legendItem}>
+                    <MaterialIcons name="pie-chart" size={20} color="#ffffff" />
+                    <Text style={styles.legendText}>% de sorties</Text>
+                  </View>
                 </View>
               </View>
             </View>
