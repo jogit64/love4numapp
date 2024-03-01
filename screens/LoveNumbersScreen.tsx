@@ -17,10 +17,27 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
 
+import { db } from "../firebaseConfig";
+import { collection, getDocs } from "firebase/firestore";
+
+import { doc, getDoc } from "firebase/firestore";
+
+import { calculateExactDrawsSinceLastOut } from "../utils/dateUtils";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+
 const { width, height } = Dimensions.get("window");
 
 const Love4NumWidget = () => {
   // const [isReady, setIsReady] = useState(false);
+
+  const handleReset = () => {
+    setLotoNumbers([]); // Réinitialisez à un tableau vide ou la valeur initiale
+    setLotoComplementaire(null); // Réinitialisez à null ou la valeur initiale
+    setStatsNumeros([]); // Réinitialisez à un tableau vide ou la valeur initiale
+    setChanceNumberStats(null); // Réinitialisez à null ou la valeur initiale
+    setPhrase("");
+  };
+
   const [phrase, setPhrase] = useState("");
   const [jeuSelectionne, setJeuSelectionne] = useState<string | null>(null);
 
@@ -32,6 +49,9 @@ const Love4NumWidget = () => {
 
   const [eurodreamsNumbers, setEurodreamsNumbers] = useState([]);
   const [eurodreamsDream, setEurodreamsDream] = useState(null);
+
+  const [statsNumeros, setStatsNumeros] = useState([]);
+  const [chanceNumberStats, setChanceNumberStats] = useState(null);
 
   const GameSelector = ({ onPress, imageSource, label, jeuId }) => (
     <TouchableOpacity
@@ -88,7 +108,7 @@ const Love4NumWidget = () => {
 
   const NOMBRE_D_OR = 1.618033988749895;
 
-  const genererNumerosLoto = (jeu) => {
+  const genererNumerosLoto = async (jeu) => {
     if (!phrase) {
       alert(
         "Veuillez entrer une phrase ou des mots d'amour avant de générer des numéros."
@@ -105,14 +125,51 @@ const Love4NumWidget = () => {
     // Ajuste la graine en utilisant le nombre d'or
     const seedAjustee = (seedBase * NOMBRE_D_OR) % 1; // Utilise le reste de la division pour garder un nombre entre 0 et 1
 
+    const fetchStatsForNumber = async (numero, type) => {
+      try {
+        const docRef = doc(db, "lotoStats", `${numero}_${type}`);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          console.log("Document data:", docSnap.data());
+          return docSnap.data();
+        } else {
+          console.log("No such document!");
+          return null;
+        }
+      } catch (error) {
+        console.error("Error fetching document:", error);
+        return null; // Gérer l'erreur comme vous le souhaitez
+      }
+    };
+
     switch (jeu) {
       case "loto":
         seedrandom(seedAjustee, { global: true });
         const numerosLoto = genererNumerosUniques(1, 49, 5);
         const numeroComplementaireLoto = Math.floor(Math.random() * 10) + 1;
+
+        // Récupération des statistiques pour tous les numéros, y compris le numéro complémentaire
+        const statsPromises = numerosLoto.map((numero) =>
+          fetchStatsForNumber(numero, "principal")
+        );
+        statsPromises.push(
+          fetchStatsForNumber(numeroComplementaireLoto, "chance")
+        );
+
+        const resolvedStats = await Promise.all(statsPromises);
+
+        // Le dernier élément du tableau resolvedStats est pour le numéro complémentaire
+        const chanceNumberStats = resolvedStats.pop(); // Récupère et enlève les stats du numéro complémentaire
+
+        // Mettre à jour tous les états en une seule opération pour éviter des rendus partiels
         setLotoNumbers(numerosLoto);
         setLotoComplementaire(numeroComplementaireLoto);
+        setStatsNumeros(resolvedStats);
+        setChanceNumberStats(chanceNumberStats);
+
         break;
+
       case "euromillions":
         seedrandom(seedAjustee, { global: true });
         const numerosEuromillions = genererNumerosUniques(1, 50, 5);
@@ -135,19 +192,14 @@ const Love4NumWidget = () => {
       <StatusBar style="light" />
       <View style={styles.content}>
         <Image
-          source={require("../assets/love4nul_log3.png")}
+          source={require("../assets/simplelogolove4num.png")}
           style={styles.image}
-          resizeMode="cover" // ou "contain", "stretch", "repeat", "center"
+          resizeMode="contain" // ou "contain", "stretch", "repeat", "center"
         />
-
-        <Text style={styles.title}>
-          Transformez votre amour en numéros de chance
-        </Text>
         <Text style={styles.para}>
           Entrez une phrase ou des mots d'amour pour voir comment l'univers
           transforme votre message en numéros de chance.
         </Text>
-
         <TextInput
           style={styles.input}
           placeholder="Entrez votre phrase positive"
@@ -156,11 +208,12 @@ const Love4NumWidget = () => {
           value={phrase}
           onChangeText={setPhrase}
         />
-
-        <Text style={styles.instruction}>
+        <TouchableOpacity onPress={handleReset}>
+          <MaterialIcons name="refresh" size={24} color="#fff" />
+        </TouchableOpacity>
+        <Text style={styles.para}>
           Choisissez le tirage pour générer vos numéros d'amour !
         </Text>
-
         <View style={styles.gameSelection}>
           <GameSelector
             onPress={() => genererNumerosLoto("loto")}
@@ -182,27 +235,122 @@ const Love4NumWidget = () => {
           />
         </View>
 
-        {/* {result && <Text style={styles.result}>{result}</Text>} */}
+        {/* //todo CHOIX LOTO */}
+        {jeuSelectionne === "loto" &&
+          lotoComplementaire &&
+          chanceNumberStats && (
+            <View>
+              {/* //* Affichage des numéros de loto */}
+              <Text style={styles.textTirage}>Vos numéros pour le Loto</Text>
+              <View style={{ flexDirection: "row", justifyContent: "center" }}>
+                {lotoNumbers.map((num, index) => (
+                  <View key={index} style={styles.lotoNumeros}>
+                    <Text style={{ color: "#ffffff" }}>{num}</Text>
+                  </View>
+                ))}
 
-        {/* Affichage conditionnel en fonction du jeu sélectionné */}
-        {jeuSelectionne === "loto" && (
-          // <View style={{ alignItems: "center", marginTop: 20 }}>
-          <View>
-            <Text style={styles.textTirage}>Vos numéros pour le Loto</Text>
-            <View style={{ flexDirection: "row" }}>
-              {lotoNumbers.map((num, index) => (
-                <View key={index} style={styles.lotoNumeros}>
-                  <Text style={{ color: "#ffffff" }}>{num}</Text>
-                </View>
-              ))}
-              {lotoComplementaire && (
                 <View style={styles.lotoComplementaire}>
                   <Text style={{ color: "#ffffff" }}>{lotoComplementaire}</Text>
                 </View>
-              )}
+              </View>
+
+              {/* //* Affichage des statistiques */}
+              <View style={styles.statBloc}>
+                <Text style={styles.textTirage}>
+                  Vos Statistiques de Chance
+                </Text>
+                <Text style={styles.statExplanation}>
+                  Basé sur les tirages depuis le 4 novembre 2019.
+                </Text>
+
+                <View style={styles.cardContainer}>
+                  {lotoNumbers.map((num, index) => (
+                    <View key={index} style={styles.card}>
+                      {/* Numéro */}
+                      <Text style={styles.number}>{num}</Text>
+
+                      {/* Statistiques */}
+                      <View style={styles.stats}>
+                        {/* Dernière sortie */}
+                        <View style={styles.statItem}>
+                          <MaterialIcons
+                            name="history"
+                            size={20}
+                            color="#ffffff"
+                          />
+                          <Text style={styles.statText}>
+                            {statsNumeros[index]?.derniereSortie
+                              ? `${calculateExactDrawsSinceLastOut(
+                                  statsNumeros[index]?.derniereSortie
+                                )} tirages`
+                              : "Données non disponibles"}
+                          </Text>
+                        </View>
+
+                        {/* Pourcentage de sorties */}
+                        <View style={styles.statItem}>
+                          <MaterialIcons
+                            name="pie-chart"
+                            size={20}
+                            color="#ffffff"
+                          />
+                          <Text style={styles.statText}>
+                            {statsNumeros[index]?.pourcentageDeSorties}%
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                  ))}
+
+                  {/* Statistiques du numéro chance */}
+                  {lotoComplementaire && chanceNumberStats && (
+                    <View style={styles.cardChance}>
+                      <Text style={styles.chanceNumber}>
+                        {lotoComplementaire}
+                      </Text>
+                      <View style={styles.stats}>
+                        <View style={styles.statItem}>
+                          <MaterialIcons
+                            name="history"
+                            size={20}
+                            color="#ffffff"
+                          />
+                          <Text style={styles.statText}>
+                            {calculateExactDrawsSinceLastOut(
+                              chanceNumberStats.derniereSortie
+                            )}{" "}
+                            tirages
+                          </Text>
+                        </View>
+                        <View style={styles.statItem}>
+                          <MaterialIcons
+                            name="pie-chart"
+                            size={20}
+                            color="#ffffff"
+                          />
+                          <Text style={styles.statText}>
+                            {chanceNumberStats.pourcentageDeSorties}%
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                  )}
+                </View>
+
+                {/* //* Icônes et légende du bas*/}
+                <View style={styles.legend}>
+                  <View style={styles.legendItem}>
+                    <MaterialIcons name="history" size={20} color="#ffffff" />
+                    <Text style={styles.legendText}>Dernière sortie</Text>
+                  </View>
+                  <View style={styles.legendItem}>
+                    <MaterialIcons name="pie-chart" size={20} color="#ffffff" />
+                    <Text style={styles.legendText}>% de sorties</Text>
+                  </View>
+                </View>
+              </View>
             </View>
-          </View>
-        )}
+          )}
 
         {jeuSelectionne === "euromillions" && (
           <View>
@@ -221,7 +369,6 @@ const Love4NumWidget = () => {
             </View>
           </View>
         )}
-
         {jeuSelectionne === "eurodreams" && (
           <View>
             <Text style={styles.textTirage}>Vos numéros pour l'Eurodreams</Text>
@@ -261,9 +408,13 @@ const styles = StyleSheet.create({
   },
 
   image: {
-    width: width * 0.6, // largeur moins les marges
-    height: height * 0.3, // 30% de la hauteur de l'écran
-    // Autres styles...
+    width: width * 0.6,
+    height: height * 0.1,
+    // width: 80,
+    // height: 80,
+    //backgroundColor: "#ccc",
+    marginTop: 50,
+    marginBottom: 20,
   },
 
   title: {
@@ -276,14 +427,18 @@ const styles = StyleSheet.create({
     //marginTop: 5,
   },
   para: {
-    fontSize: 14,
-    // fontFamily: "hennypennyregular",
-    //color: "#FFEB3B",
-    color: "#e0b0ff",
+    fontSize: 16,
+    //fontFamily: "lemonregular",
+    //fontFamily: "ralewaythin",
+    //fontFamily: "ralewayextraBold",
+    fontFamily: "robotoregular",
+    //color: "#e0b0ff",
+    color: "#fff",
     textAlign: "center",
     marginBottom: 15,
     marginTop: 5,
     marginHorizontal: 20,
+    lineHeight: 25,
   },
 
   input: {
@@ -291,26 +446,19 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 20,
     color: "#e0b0ff",
-    borderRadius: 25,
-    backgroundColor: "#3d1961",
+    //borderRadius: 25,
+    backgroundColor: "#1b1138",
+    borderBottomWidth: 0.2,
+    borderBottomColor: "#bfa2cb",
     textAlign: "center",
-  },
-  instruction: {
-    fontSize: 14,
-    // fontFamily: "hennypennyregular",
-    //color: "#FFEB3B",
-    color: "#e0b0ff",
-    textAlign: "center",
-    marginBottom: 15,
-    marginTop: 5,
-    marginHorizontal: 20,
   },
 
   textTirage: {
     fontSize: 16,
-    fontFamily: "hennypennyregular",
+    //fontFamily: "hennypennyregular",
+    fontFamily: "robotoregular",
     //color: "#FFEB3B",
-    color: "yellow",
+    color: "#FFF",
     textAlign: "center",
     marginBottom: 5,
     marginTop: 25,
@@ -343,13 +491,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
 
-  result: {
-    marginTop: 20,
-    fontSize: 18,
-    color: "#FFEB3B",
-    fontWeight: "bold",
-    padding: 10,
-  },
+  //   result: {
+  //     marginTop: 20,
+  //     fontSize: 18,
+  //     color: "#FFEB3B",
+  //     fontWeight: "bold",
+  //     padding: 10,
+  //   },
 
   selectedGame: {
     backgroundColor: "#ADD8E6", // Bleu clair pour le jeu sélectionné
@@ -452,6 +600,87 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: "center",
     alignItems: "center",
+  },
+
+  lotoNumeroContainer: {
+    alignItems: "center",
+    margin: 5, // Ajustez selon votre mise en page
+  },
+  lotoStatistiques: {
+    // Styles pour le texte des statistiques
+  },
+  lotoComplementaireContainer: {
+    alignItems: "center",
+    margin: 5, // Ajustez selon votre mise en page
+  },
+
+  statBloc: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-around",
+    marginBottom: 60,
+  },
+
+  statExplanation: {
+    color: "grey",
+    fontFamily: "robotoregular",
+    fontSize: 14,
+    //color: "#FFEB3B",
+    textAlign: "center",
+    marginBottom: 5,
+  },
+
+  cardContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-around",
+  },
+  card: {
+    backgroundColor: "#fe64f7",
+    borderRadius: 10,
+    padding: 10,
+    //margin: 5,
+    flexBasis: "30%",
+    margin: "1%",
+    alignItems: "center",
+  },
+  cardChance: {
+    backgroundColor: "#ccc",
+    borderRadius: 10,
+    padding: 10,
+    //margin: 5,
+    flexBasis: "30%",
+    margin: "1%",
+    alignItems: "center",
+  },
+  number: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  chanceNumber: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  stats: {
+    marginTop: 5,
+  },
+  statText: {
+    fontSize: 14,
+    fontFamily: "robotoregular",
+  },
+  legend: {
+    marginTop: 20,
+    alignItems: "center",
+  },
+  legendItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 5,
+  },
+  legendText: {
+    marginLeft: 10,
+    color: "#ffffff",
+    fontSize: 16,
   },
 });
 

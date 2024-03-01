@@ -1,6 +1,20 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true
-  }
+    "strict": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true, // Utile pour ignorer les vérifications de types sur les fichiers de déclaration des bibliothèques
+    "noEmit": true, // Empêche TypeScript de générer des fichiers .js, utile dans un projet React Native
+    "resolveJsonModule": true, // Permet l'importation de modules JSON directement
+    "isolatedModules": true // Assure que chaque fichier peut être transpilé indépendamment
+  },
+  "include": ["./src/**/*"], // Assurez-vous que le chemin correspond à la structure de votre projet
+  "exclude": [
+    "node_modules",
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js"
+  ]
 }
