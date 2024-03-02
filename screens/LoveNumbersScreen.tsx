@@ -138,7 +138,7 @@ const Love4NumWidget = () => {
           console.log("Document data:", docSnap.data());
           return docSnap.data();
         } else {
-          console.log("No such document!");
+          console.log("Statistiques non disponibles !");
           return null;
         }
       } catch (error) {
