@@ -36,10 +36,25 @@ const Love4NumWidget = () => {
   // const [isReady, setIsReady] = useState(false);
 
   const handleReset = () => {
-    setLotoNumbers([]); // Réinitialisez à un tableau vide ou la valeur initiale
-    setLotoComplementaire(null); // Réinitialisez à null ou la valeur initiale
-    setStatsNumeros([]); // Réinitialisez à un tableau vide ou la valeur initiale
-    setChanceNumberStats(null); // Réinitialisez à null ou la valeur initiale
+    // Réinitialisation pour le Loto
+    setLotoNumbers([]);
+    setLotoComplementaire(null);
+    setStatsNumeros([]); // Assurez-vous que cela réinitialise les statistiques correctement pour le contexte actuel
+    setChanceNumberStats(null);
+
+    // Réinitialisation pour Euromillions
+    setEuromillionsNumbers([]);
+    setEuromillionsEtoiles([]);
+    setStatsNumerosEuromillions([]); // Si vous avez des statistiques distinctes pour Euromillions
+    setStatsEtoilesEuromillions([]); // Si vous avez des statistiques distinctes pour les étoiles d'Euromillions
+
+    // Réinitialisation pour Eurodreams
+    setEurodreamsNumbers([]);
+    setEurodreamsDream(null);
+    setStatsNumerosEurodreams([]); // Si vous avez des statistiques distinctes pour Eurodreams
+    setStatsDream(null); // Si vous avez des statistiques pour le numéro de rêve d'Eurodreams
+
+    // Réinitialiser la phrase saisie par l'utilisateur
     setPhrase("");
   };
 
