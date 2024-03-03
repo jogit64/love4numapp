@@ -23,9 +23,12 @@ import { collection, getDocs } from "firebase/firestore";
 
 import { doc, getDoc } from "firebase/firestore";
 
-import { calculateExactDrawsSinceLastOut } from "../utils/dateUtils";
+//import { calculateExactDrawsSinceLastOut } from "../utils/dateUtils";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import LotoStats from "../components/LotoDisplay";
+import LotoDisplay from "../components/LotoDisplay";
+import EuromillionsDisplay from "../components/EuromillionsDisplay";
+import EurodreamsDisplay from "../components/EurodreamsDisplay";
+import CustomLoader from "../components/CustomLoader";
 
 const { width, height } = Dimensions.get("window");
 
@@ -54,6 +57,12 @@ const Love4NumWidget = () => {
 
   const [statsNumeros, setStatsNumeros] = useState([]);
   const [chanceNumberStats, setChanceNumberStats] = useState(null);
+  const [statsNumerosEuromillions, setStatsNumerosEuromillions] = useState([]);
+  const [statsEtoilesEuromillions, setStatsEtoilesEuromillions] = useState([]);
+  const [statsNumerosEurodreams, setStatsNumerosEurodreams] = useState([]);
+  const [statsDream, setStatsDream] = useState(null);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const GameSelector = ({ onPress, imageSource, label, jeuId }) => (
     <TouchableOpacity
@@ -113,10 +122,12 @@ const Love4NumWidget = () => {
   const NOMBRE_D_OR = 1.618033988749895;
 
   const genererNumerosLoto = async (jeu) => {
+    setIsLoading(true);
     if (!phrase) {
       alert(
         "Veuillez entrer une phrase ou des mots d'amour avant de générer des numéros."
       );
+      setIsLoading(false);
       return;
     }
 
@@ -129,21 +140,20 @@ const Love4NumWidget = () => {
     // Ajuste la graine en utilisant le nombre d'or
     const seedAjustee = (seedBase * NOMBRE_D_OR) % 1; // Utilise le reste de la division pour garder un nombre entre 0 et 1
 
-    const fetchStatsForNumber = async (numero, type) => {
+    const fetchStatsForNumber = async (numero, type, collectionName) => {
       try {
-        const docRef = doc(db, "lotoStats", `${numero}_${type}`);
+        const docRef = doc(db, collectionName, `${numero}_${type}`);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          console.log("Document data:", docSnap.data());
           return docSnap.data();
         } else {
           console.log("Statistiques non disponibles !");
           return null;
         }
       } catch (error) {
-        console.error("Error fetching document:", error);
-        return null; // Gérer l'erreur comme vous le souhaitez
+        console.error("Erreur lors de la récupération du document :", error);
+        return null;
       }
     };
 
@@ -154,42 +164,90 @@ const Love4NumWidget = () => {
         const numeroComplementaireLoto = Math.floor(Math.random() * 10) + 1;
 
         // Récupération des statistiques pour tous les numéros, y compris le numéro complémentaire
-        const statsPromises = numerosLoto.map((numero) =>
-          fetchStatsForNumber(numero, "principal")
+        const statsPromisesLoto = numerosLoto.map((numero) =>
+          fetchStatsForNumber(numero, "principal", "lotoStats")
         );
-        statsPromises.push(
-          fetchStatsForNumber(numeroComplementaireLoto, "chance")
+        const statsChancePromiseLoto = fetchStatsForNumber(
+          numeroComplementaireLoto,
+          "chance",
+          "lotoStats"
         );
 
-        const resolvedStats = await Promise.all(statsPromises);
-
-        // Le dernier élément du tableau resolvedStats est pour le numéro complémentaire
-        const chanceNumberStats = resolvedStats.pop(); // Récupère et enlève les stats du numéro complémentaire
+        // Attendre que toutes les promesses se résolvent
+        const resolvedStatsLoto = await Promise.all(statsPromisesLoto);
+        const resolvedStatsChanceLoto = await statsChancePromiseLoto; // Pas besoin d'utiliser Promise.all pour une seule promesse
 
         // Mettre à jour tous les états en une seule opération pour éviter des rendus partiels
         setLotoNumbers(numerosLoto);
         setLotoComplementaire(numeroComplementaireLoto);
-        setStatsNumeros(resolvedStats);
-        setChanceNumberStats(chanceNumberStats);
-
+        setStatsNumeros(resolvedStatsLoto);
+        setChanceNumberStats(resolvedStatsChanceLoto); // Directement assigné sans utiliser [0] puisque nous n'utilisons pas Promise.all ici
+        setIsLoading(false);
         break;
 
       case "euromillions":
         seedrandom(seedAjustee, { global: true });
         const numerosEuromillions = genererNumerosUniques(1, 50, 5);
         const etoilesEuromillions = genererNumerosUniques(1, 12, 2);
+
+        // Récupération des statistiques pour les numéros et étoiles d'Euromillions
+        const statsNumerosPromises = numerosEuromillions.map((numero) =>
+          fetchStatsForNumber(numero, "principal", "euromillionsStats")
+        );
+        const statsEtoilesPromises = etoilesEuromillions.map((etoile) =>
+          fetchStatsForNumber(etoile, "chance", "euromillionsStats")
+        );
+
+        const resolvedStatsNumeros = await Promise.all(statsNumerosPromises);
+        const resolvedStatsEtoiles = await Promise.all(statsEtoilesPromises);
+
         setEuromillionsNumbers(numerosEuromillions);
         setEuromillionsEtoiles(etoilesEuromillions);
+        setStatsNumerosEuromillions(resolvedStatsNumeros);
+        setStatsEtoilesEuromillions(resolvedStatsEtoiles);
+        setIsLoading(false);
         break;
+
       case "eurodreams":
-        seedrandom(seedAjustee, { global: true });
-        const numerosEurodreams = genererNumerosUniques(1, 40, 6);
-        const numeroDreamEurodreams = Math.floor(Math.random() * 5) + 1;
-        setEurodreamsNumbers(numerosEurodreams);
-        setEurodreamsDream(numeroDreamEurodreams);
+        try {
+          seedrandom(seedAjustee, { global: true });
+          const numerosEurodreams = genererNumerosUniques(1, 40, 6);
+          const numeroDreamEurodreams = Math.floor(Math.random() * 5) + 1;
+
+          const statsNumerosPromisesEurodreams = numerosEurodreams.map(
+            (numero) =>
+              fetchStatsForNumber(numero, "principal", "eurodreamsStats")
+          );
+          const statsDreamPromise = fetchStatsForNumber(
+            numeroDreamEurodreams,
+            "chance",
+            "eurodreamsStats"
+          );
+
+          const resolvedStatsNumerosEurodreams = await Promise.all(
+            statsNumerosPromisesEurodreams
+          );
+          const resolvedStatsDream = await statsDreamPromise;
+
+          setEurodreamsNumbers(numerosEurodreams);
+          setEurodreamsDream(numeroDreamEurodreams);
+          setStatsNumerosEurodreams(resolvedStatsNumerosEurodreams);
+          setStatsDream(resolvedStatsDream);
+        } catch (error) {
+          console.error(
+            "Une erreur est survenue lors de la récupération des statistiques : ",
+            error
+          );
+        } finally {
+          setIsLoading(false); // Assurez-vous de cacher le spinner indépendamment du résultat de la récupération des statistiques
+        }
         break;
     }
   };
+
+  if (isLoading) {
+    return <CustomLoader />;
+  }
 
   return (
     <ScrollView style={AppStyles.scrollView} onLayout={onLayoutRootView}>
@@ -243,7 +301,7 @@ const Love4NumWidget = () => {
         {jeuSelectionne === "loto" &&
           lotoComplementaire &&
           chanceNumberStats && (
-            <LotoStats
+            <LotoDisplay
               lotoNumbers={lotoNumbers}
               lotoComplementaire={lotoComplementaire}
               statsNumeros={statsNumeros}
@@ -251,7 +309,18 @@ const Love4NumWidget = () => {
             />
           )}
 
-        {jeuSelectionne === "euromillions" && (
+        {/* //todo CHOIX EUROMILLIONS */}
+        {jeuSelectionne === "euromillions" &&
+          euromillionsNumbers.length > 0 && (
+            <EuromillionsDisplay
+              euromillionsNumbers={euromillionsNumbers}
+              euromillionsEtoiles={euromillionsEtoiles}
+              statsNumeros={statsNumerosEuromillions} // Utilisez le nom correct de l'état
+              statsEtoiles={statsEtoilesEuromillions} // Utilisez le nom correct de l'état
+            />
+          )}
+
+        {/* {jeuSelectionne === "euromillions" && (
           <View>
             <Text style={AppStyles.textTirage}>
               Vos numéros pour l'Euromillions
@@ -267,8 +336,18 @@ const Love4NumWidget = () => {
               ))}
             </View>
           </View>
+        )} */}
+
+        {jeuSelectionne === "eurodreams" && eurodreamsNumbers.length > 0 && (
+          <EurodreamsDisplay
+            eurodreamsNumbers={eurodreamsNumbers}
+            eurodreamsDream={eurodreamsDream}
+            statsNumeros={statsNumerosEurodreams} // Assurez-vous que ces états sont correctement définis et mis à jour
+            statsDream={statsDream} // Assurez-vous que cet état est correctement défini et mis à jour
+          />
         )}
-        {jeuSelectionne === "eurodreams" && (
+
+        {/* {jeuSelectionne === "eurodreams" && (
           <View>
             <Text style={AppStyles.textTirage}>
               Vos numéros pour l'Eurodreams
@@ -285,8 +364,8 @@ const Love4NumWidget = () => {
                 </View>
               )}
             </View>
-          </View>
-        )}
+          </View> 
+        )} */}
       </View>
     </ScrollView>
   );
