@@ -55,6 +55,8 @@ const Love4NumWidget = () => {
 
   const [statsNumeros, setStatsNumeros] = useState([]);
   const [chanceNumberStats, setChanceNumberStats] = useState(null);
+  const [statsNumerosEuromillions, setStatsNumerosEuromillions] = useState([]);
+  const [statsEtoilesEuromillions, setStatsEtoilesEuromillions] = useState([]);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -134,21 +136,20 @@ const Love4NumWidget = () => {
     // Ajuste la graine en utilisant le nombre d'or
     const seedAjustee = (seedBase * NOMBRE_D_OR) % 1; // Utilise le reste de la division pour garder un nombre entre 0 et 1
 
-    const fetchStatsForNumber = async (numero, type) => {
+    const fetchStatsForNumber = async (numero, type, collectionName) => {
       try {
-        const docRef = doc(db, "lotoStats", `${numero}_${type}`);
+        const docRef = doc(db, collectionName, `${numero}_${type}`);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          console.log("Document data:", docSnap.data());
           return docSnap.data();
         } else {
           console.log("Statistiques non disponibles !");
           return null;
         }
       } catch (error) {
-        console.error("Error fetching document:", error);
-        return null; // Gérer l'erreur comme vous le souhaitez
+        console.error("Erreur lors de la récupération du document :", error);
+        return null;
       }
     };
 
@@ -159,23 +160,24 @@ const Love4NumWidget = () => {
         const numeroComplementaireLoto = Math.floor(Math.random() * 10) + 1;
 
         // Récupération des statistiques pour tous les numéros, y compris le numéro complémentaire
-        const statsPromises = numerosLoto.map((numero) =>
-          fetchStatsForNumber(numero, "principal")
+        const statsPromisesLoto = numerosLoto.map((numero) =>
+          fetchStatsForNumber(numero, "principal", "lotoStats")
         );
-        statsPromises.push(
-          fetchStatsForNumber(numeroComplementaireLoto, "chance")
+        const statsChancePromiseLoto = fetchStatsForNumber(
+          numeroComplementaireLoto,
+          "chance",
+          "lotoStats"
         );
 
-        const resolvedStats = await Promise.all(statsPromises);
-
-        // Le dernier élément du tableau resolvedStats est pour le numéro complémentaire
-        const chanceNumberStats = resolvedStats.pop(); // Récupère et enlève les stats du numéro complémentaire
+        // Attendre que toutes les promesses se résolvent
+        const resolvedStatsLoto = await Promise.all(statsPromisesLoto);
+        const resolvedStatsChanceLoto = await statsChancePromiseLoto; // Pas besoin d'utiliser Promise.all pour une seule promesse
 
         // Mettre à jour tous les états en une seule opération pour éviter des rendus partiels
         setLotoNumbers(numerosLoto);
         setLotoComplementaire(numeroComplementaireLoto);
-        setStatsNumeros(resolvedStats);
-        setChanceNumberStats(chanceNumberStats);
+        setStatsNumeros(resolvedStatsLoto);
+        setChanceNumberStats(resolvedStatsChanceLoto); // Directement assigné sans utiliser [0] puisque nous n'utilisons pas Promise.all ici
         setIsLoading(false);
         break;
 
@@ -262,7 +264,18 @@ const Love4NumWidget = () => {
             />
           )}
 
-        {jeuSelectionne === "euromillions" && (
+        {/* //todo CHOIX EUROMILLIONS */}
+        {jeuSelectionne === "euromillions" &&
+          euromillionsNumbers.length > 0 && (
+            <EuromillionsDisplay
+              euromillionsNumbers={euromillionsNumbers}
+              euromillionsEtoiles={euromillionsEtoiles}
+              statsNumeros={statsNumeros} // Assurez-vous d'avoir récupéré ces stats
+              statsEtoiles={statsEtoiles} // Assurez-vous d'avoir récupéré ces stats
+            />
+          )}
+
+        {/* {jeuSelectionne === "euromillions" && (
           <View>
             <Text style={AppStyles.textTirage}>
               Vos numéros pour l'Euromillions
@@ -278,7 +291,8 @@ const Love4NumWidget = () => {
               ))}
             </View>
           </View>
-        )}
+        )} */}
+
         {jeuSelectionne === "eurodreams" && (
           <View>
             <Text style={AppStyles.textTirage}>
