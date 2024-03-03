@@ -23,9 +23,10 @@ import { collection, getDocs } from "firebase/firestore";
 
 import { doc, getDoc } from "firebase/firestore";
 
-import { calculateExactDrawsSinceLastOut } from "../utils/dateUtils";
+//import { calculateExactDrawsSinceLastOut } from "../utils/dateUtils";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import LotoStats from "../components/LotoDisplay";
+import LotoDisplay from "../components/LotoDisplay";
+import CustomLoader from "../components/CustomLoader";
 
 const { width, height } = Dimensions.get("window");
 
@@ -54,6 +55,8 @@ const Love4NumWidget = () => {
 
   const [statsNumeros, setStatsNumeros] = useState([]);
   const [chanceNumberStats, setChanceNumberStats] = useState(null);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const GameSelector = ({ onPress, imageSource, label, jeuId }) => (
     <TouchableOpacity
@@ -113,10 +116,12 @@ const Love4NumWidget = () => {
   const NOMBRE_D_OR = 1.618033988749895;
 
   const genererNumerosLoto = async (jeu) => {
+    setIsLoading(true);
     if (!phrase) {
       alert(
         "Veuillez entrer une phrase ou des mots d'amour avant de générer des numéros."
       );
+      setIsLoading(false);
       return;
     }
 
@@ -171,7 +176,7 @@ const Love4NumWidget = () => {
         setLotoComplementaire(numeroComplementaireLoto);
         setStatsNumeros(resolvedStats);
         setChanceNumberStats(chanceNumberStats);
-
+        setIsLoading(false);
         break;
 
       case "euromillions":
@@ -180,6 +185,7 @@ const Love4NumWidget = () => {
         const etoilesEuromillions = genererNumerosUniques(1, 12, 2);
         setEuromillionsNumbers(numerosEuromillions);
         setEuromillionsEtoiles(etoilesEuromillions);
+        setIsLoading(false);
         break;
       case "eurodreams":
         seedrandom(seedAjustee, { global: true });
@@ -187,9 +193,14 @@ const Love4NumWidget = () => {
         const numeroDreamEurodreams = Math.floor(Math.random() * 5) + 1;
         setEurodreamsNumbers(numerosEurodreams);
         setEurodreamsDream(numeroDreamEurodreams);
+        setIsLoading(false);
         break;
     }
   };
+
+  if (isLoading) {
+    return <CustomLoader />;
+  }
 
   return (
     <ScrollView style={AppStyles.scrollView} onLayout={onLayoutRootView}>
@@ -243,7 +254,7 @@ const Love4NumWidget = () => {
         {jeuSelectionne === "loto" &&
           lotoComplementaire &&
           chanceNumberStats && (
-            <LotoStats
+            <LotoDisplay
               lotoNumbers={lotoNumbers}
               lotoComplementaire={lotoComplementaire}
               statsNumeros={statsNumeros}
