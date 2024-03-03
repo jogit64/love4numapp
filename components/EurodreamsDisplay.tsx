@@ -100,6 +100,17 @@ const EurodreamsDisplay: React.FC<EurodreamsDisplayProps> = ({
             </View>
           )}
         </View>
+        {/* //* Icônes et légende du bas*/}
+        <View style={AppStyles.legend}>
+          <View style={AppStyles.legendItem}>
+            <MaterialIcons name="history" size={20} color="#ffffff" />
+            <Text style={AppStyles.legendText}>Dernière sortie</Text>
+          </View>
+          <View style={AppStyles.legendItem}>
+            <MaterialIcons name="pie-chart" size={20} color="#ffffff" />
+            <Text style={AppStyles.legendText}>% de sorties</Text>
+          </View>
+        </View>
       </View>
     </View>
   );
