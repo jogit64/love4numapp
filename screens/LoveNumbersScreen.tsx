@@ -27,6 +27,7 @@ import { doc, getDoc } from "firebase/firestore";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import LotoDisplay from "../components/LotoDisplay";
 import EuromillionsDisplay from "../components/EuromillionsDisplay";
+import EurodreamsDisplay from "../components/EurodreamsDisplay";
 import CustomLoader from "../components/CustomLoader";
 
 const { width, height } = Dimensions.get("window");
@@ -58,6 +59,8 @@ const Love4NumWidget = () => {
   const [chanceNumberStats, setChanceNumberStats] = useState(null);
   const [statsNumerosEuromillions, setStatsNumerosEuromillions] = useState([]);
   const [statsEtoilesEuromillions, setStatsEtoilesEuromillions] = useState([]);
+  const [statsNumerosEurodreams, setStatsNumerosEurodreams] = useState([]);
+  const [statsDream, setStatsDream] = useState(null);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -204,6 +207,41 @@ const Love4NumWidget = () => {
         setStatsEtoilesEuromillions(resolvedStatsEtoiles);
         setIsLoading(false);
         break;
+
+      case "eurodreams":
+        try {
+          seedrandom(seedAjustee, { global: true });
+          const numerosEurodreams = genererNumerosUniques(1, 40, 6);
+          const numeroDreamEurodreams = Math.floor(Math.random() * 5) + 1;
+
+          const statsNumerosPromisesEurodreams = numerosEurodreams.map(
+            (numero) =>
+              fetchStatsForNumber(numero, "principal", "eurodreamsStats")
+          );
+          const statsDreamPromise = fetchStatsForNumber(
+            numeroDreamEurodreams,
+            "dream",
+            "eurodreamsStats"
+          );
+
+          const resolvedStatsNumerosEurodreams = await Promise.all(
+            statsNumerosPromisesEurodreams
+          );
+          const resolvedStatsDream = await statsDreamPromise;
+
+          setEurodreamsNumbers(numerosEurodreams);
+          setEurodreamsDream(numeroDreamEurodreams);
+          setStatsNumerosEurodreams(resolvedStatsNumerosEurodreams);
+          setStatsDream(resolvedStatsDream);
+        } catch (error) {
+          console.error(
+            "Une erreur est survenue lors de la récupération des statistiques : ",
+            error
+          );
+        } finally {
+          setIsLoading(false); // Assurez-vous de cacher le spinner indépendamment du résultat de la récupération des statistiques
+        }
+        break;
     }
   };
 
@@ -300,7 +338,16 @@ const Love4NumWidget = () => {
           </View>
         )} */}
 
-        {jeuSelectionne === "eurodreams" && (
+        {jeuSelectionne === "eurodreams" && eurodreamsNumbers.length > 0 && (
+          <EurodreamsDisplay
+            eurodreamsNumbers={eurodreamsNumbers}
+            eurodreamsDream={eurodreamsDream}
+            statsNumeros={statsNumerosEurodreams} // Assurez-vous que ces états sont correctement définis et mis à jour
+            statsDream={statsDream} // Assurez-vous que cet état est correctement défini et mis à jour
+          />
+        )}
+
+        {/* {jeuSelectionne === "eurodreams" && (
           <View>
             <Text style={AppStyles.textTirage}>
               Vos numéros pour l'Eurodreams
@@ -317,8 +364,8 @@ const Love4NumWidget = () => {
                 </View>
               )}
             </View>
-          </View>
-        )}
+          </View> 
+        )} */}
       </View>
     </ScrollView>
   );
