@@ -26,6 +26,7 @@ import { doc, getDoc } from "firebase/firestore";
 //import { calculateExactDrawsSinceLastOut } from "../utils/dateUtils";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import LotoDisplay from "../components/LotoDisplay";
+import EuromillionsDisplay from "../components/EuromillionsDisplay";
 import CustomLoader from "../components/CustomLoader";
 
 const { width, height } = Dimensions.get("window");
@@ -185,16 +186,22 @@ const Love4NumWidget = () => {
         seedrandom(seedAjustee, { global: true });
         const numerosEuromillions = genererNumerosUniques(1, 50, 5);
         const etoilesEuromillions = genererNumerosUniques(1, 12, 2);
+
+        // Récupération des statistiques pour les numéros et étoiles d'Euromillions
+        const statsNumerosPromises = numerosEuromillions.map((numero) =>
+          fetchStatsForNumber(numero, "principal", "euromillionsStats")
+        );
+        const statsEtoilesPromises = etoilesEuromillions.map((etoile) =>
+          fetchStatsForNumber(etoile, "chance", "euromillionsStats")
+        );
+
+        const resolvedStatsNumeros = await Promise.all(statsNumerosPromises);
+        const resolvedStatsEtoiles = await Promise.all(statsEtoilesPromises);
+
         setEuromillionsNumbers(numerosEuromillions);
         setEuromillionsEtoiles(etoilesEuromillions);
-        setIsLoading(false);
-        break;
-      case "eurodreams":
-        seedrandom(seedAjustee, { global: true });
-        const numerosEurodreams = genererNumerosUniques(1, 40, 6);
-        const numeroDreamEurodreams = Math.floor(Math.random() * 5) + 1;
-        setEurodreamsNumbers(numerosEurodreams);
-        setEurodreamsDream(numeroDreamEurodreams);
+        setStatsNumerosEuromillions(resolvedStatsNumeros);
+        setStatsEtoilesEuromillions(resolvedStatsEtoiles);
         setIsLoading(false);
         break;
     }
@@ -270,8 +277,8 @@ const Love4NumWidget = () => {
             <EuromillionsDisplay
               euromillionsNumbers={euromillionsNumbers}
               euromillionsEtoiles={euromillionsEtoiles}
-              statsNumeros={statsNumeros} // Assurez-vous d'avoir récupéré ces stats
-              statsEtoiles={statsEtoiles} // Assurez-vous d'avoir récupéré ces stats
+              statsNumeros={statsNumerosEuromillions} // Utilisez le nom correct de l'état
+              statsEtoiles={statsEtoilesEuromillions} // Utilisez le nom correct de l'état
             />
           )}
 
