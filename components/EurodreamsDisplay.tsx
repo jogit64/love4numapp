@@ -4,7 +4,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { calculateExactDrawsSinceLastOut } from "../utils/dateUtils";
 import AppStyles from "../styles/AppStyles";
 
-// Définition de l'interface des props pour EurodreamsDisplay
+// Interface pour les props d'EurodreamsDisplay
 interface EurodreamsDisplayProps {
   eurodreamsNumbers: number[];
   eurodreamsDream: number;

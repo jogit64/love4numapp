@@ -220,7 +220,7 @@ const Love4NumWidget = () => {
           );
           const statsDreamPromise = fetchStatsForNumber(
             numeroDreamEurodreams,
-            "dream",
+            "chance",
             "eurodreamsStats"
           );
 
