@@ -281,21 +281,28 @@ const Love4NumWidget = () => {
         <View style={AppStyles.gameSelection}>
           <GameSelector
             onPress={() => genererNumerosLoto("loto")}
-            imageSource={require("../assets/loto.png")}
-            label="Loto"
+            // imageSource={require("../assets/loto.png")}
+            // label="Loto"
+            imageSource={require("../assets/iconlov4.png")}
+            label="Classique"
             jeuId="loto"
           />
           <GameSelector
             onPress={() => genererNumerosLoto("euromillions")}
-            imageSource={require("../assets/euromillions.png")}
-            label="Euromillions"
+            // imageSource={require("../assets/euromillions.png")}
+            // label="Euromillions"
+            imageSource={require("../assets/iconlov4_5.png")}
+            label="Européen"
             jeuId="euromillions"
           />
           <GameSelector
             onPress={() => genererNumerosLoto("eurodreams")}
-            imageSource={require("../assets/dreams.png")}
+            // imageSource={require("../assets/dreams.png")}
+            // label="Eurodreams"
+            imageSource={require("../assets/iconlov4_3.png")}
             label="Eurodreams"
             jeuId="eurodreams"
+            label="Rêves"
           />
         </View>
 

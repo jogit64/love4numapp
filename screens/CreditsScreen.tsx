@@ -1,71 +1,105 @@
-// Dans un fichier nommé CreditsScreen.js sous le dossier screens
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Linking,
+} from "react-native";
 
-const CreditsScreen = () => {
+const CreditsScreen = ({ navigation }) => {
+  // Fonction pour ouvrir des liens
+  const openURL = (url) => {
+    Linking.openURL(url).catch((err) =>
+      console.error("An error occurred", err)
+    );
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Informations sur les crédits</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>Crédits & Informations</Text>
 
-      <View style={styles.para3Bloc}></View>
-      <View style={styles.lienBloc}>
-        <TouchableOpacity onPress={() => navigation.navigate("Jouer")}>
-          <Text style={styles.lien}>Politique de confidentialité</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+      <Text style={styles.text}>
+        Merci d'utiliser [Nom de l'App] ! Nous travaillons constamment pour
+        améliorer votre expérience.
+      </Text>
+
+      <TouchableOpacity
+        onPress={() => openURL("https://votrepolitiquedeconfidentialite.com")}
+      >
+        <Text style={styles.lien}>Politique de confidentialité</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.navigate("Jouer")}>
+        <Text style={styles.lien}>Conditions d'utilisation</Text>
+      </TouchableOpacity>
+
+      <Text style={styles.text}>
+        Pour toute question ou retour, n'hésitez pas à nous contacter :
+      </Text>
+      <TouchableOpacity onPress={() => openURL("mailto:support@votreapp.com")}>
+        <Text style={styles.lien}>support@votreapp.com</Text>
+      </TouchableOpacity>
+
+      <Text style={styles.text}>
+        Vous aimez notre application ? Laissez-nous un avis :
+      </Text>
+      <TouchableOpacity
+        onPress={() =>
+          openURL("https://play.google.com/store/apps/details?id=votre.app.id")
+        }
+      >
+        <Text style={styles.lien}>Évaluer sur Google Play</Text>
+      </TouchableOpacity>
+
+      <Text style={styles.footerText}>
+        © [Année] [Nom de votre société]. Tous droits réservés.
+      </Text>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#0F052C",
+    paddingVertical: 50,
+  },
+  title: {
+    fontSize: 22,
+    fontFamily: "robotoregular",
+    color: "#FFF",
+    marginBottom: 20,
   },
   text: {
-    fontSize: 18,
-  },
-  para3Bloc: {
-    flexGrow: 1,
-    justifyContent: "flex-start",
-    alignItems: "center",
-    //minHeight: height,
-    marginBottom: 95,
-  },
-  lienBloc: {
-    flexGrow: 1,
-    justifyContent: "flex-end",
-    alignItems: "center",
-    //minHeight: height,
-    marginBottom: 95,
-  },
-  para2b: {
-    fontSize: 14,
-    //fontFamily: "lemonregular",
-    //fontFamily: "ralewaythin",
-    //fontFamily: "ralewayextraBold",
+    fontSize: 16,
     fontFamily: "robotoregular",
-    //color: "#e0b0ff",
     color: "#FFF",
     textAlign: "center",
+    marginBottom: 15,
+    marginHorizontal: 20,
+    lineHeight: 25,
+  },
+  lien: {
+    fontSize: 16,
+    fontFamily: "robotoregular",
+    color: "#E91E63",
+    textAlign: "center",
+    textDecorationLine: "underline",
     marginBottom: 15,
     marginTop: 5,
     marginHorizontal: 20,
     lineHeight: 25,
   },
-  lien: {
-    fontSize: 11,
-    //fontFamily: "lemonregular",
-    //fontFamily: "ralewaythin",
-    //fontFamily: "ralewayextraBold",
+  footerText: {
+    fontSize: 14,
     fontFamily: "robotoregular",
-    //color: "#e0b0ff",
     color: "#CCC",
     textAlign: "center",
-    //textDecoration: "underline",
-    marginBottom: 15,
-    marginTop: 5,
+    marginTop: 25,
     marginHorizontal: 20,
     lineHeight: 25,
   },

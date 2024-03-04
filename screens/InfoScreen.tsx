@@ -68,9 +68,19 @@ const InfoScreen = () => {
 
         <Text style={styles.para}>
           Avec notre algorithme unique basé sur le nombre d'or, convertissez
-          l'amour, l'espoir, et la positivité en numéros porte-bonheur pour le
-          Loto, l'Euromillions, et Eurodreams.
+          l'amour, l'espoir, et la positivité en numéros porte-bonheur pour des
+          jeux de loteries françaises.
         </Text>
+        <Text style={styles.para2r}>Tirage classique</Text>
+        <Text style={styles.para2bn}>5 numéros (1 - 49)</Text>
+        <Text style={styles.para2nb}>1 numéros complémentaire (1 - 10)</Text>
+        <Text style={styles.para2r}>Tirage européen</Text>
+        <Text style={styles.para2bn}>5 numéros (1 - 50)</Text>
+        <Text style={styles.para2bn}>2 numéros complémentaires (1 - 12)</Text>
+
+        <Text style={styles.para2r}>Tirage rêves</Text>
+        <Text style={styles.para2bn}>6 numéros (1 - 40)</Text>
+        <Text style={styles.para2bn}>1 numéros complémentaires (1 - 5)</Text>
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate("Jouer")}
@@ -173,7 +183,7 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: "row", // Ensure icon and text are in a row
     alignItems: "center", // Align items in the center
-    marginTop: 20,
+    marginTop: 40,
     backgroundColor: "#FF48C4",
     padding: 10,
     borderRadius: 20,
@@ -230,6 +240,19 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 15,
     marginTop: 5,
+    marginHorizontal: 20,
+    lineHeight: 25,
+  },
+  para2bn: {
+    fontSize: 14,
+    //fontFamily: "lemonregular",
+    //fontFamily: "ralewaythin",
+    //fontFamily: "ralewayextraBold",
+    fontFamily: "robotoregular",
+    //color: "#e0b0ff",
+    color: "#FFF",
+    textAlign: "center",
+
     marginHorizontal: 20,
     lineHeight: 25,
   },
