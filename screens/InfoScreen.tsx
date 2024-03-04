@@ -79,6 +79,50 @@ const InfoScreen = () => {
           {/* Icon inside the button */}
           <Text style={styles.buttonText}>C'est parti !</Text>
         </TouchableOpacity>
+
+        <View style={styles.para2Bloc}>
+          <Text style={styles.para2r}>Vibrations Positives</Text>
+          <Text style={styles.para2b}>
+            Convertissez l’énergie de mots empreints d’amour, d’espoir, et de
+            positivité en numéros porte-bonheur.
+          </Text>
+        </View>
+        <View style={styles.para2Bloc}>
+          <Text style={styles.para2r}>Intention Puissante</Text>
+          <Text style={styles.para2b}>
+            Utilisez des déclarations d’amour, noms de proches, ou tout mot
+            inspirant bonheur et gratitude.
+          </Text>
+        </View>
+        <View style={styles.para2Bloc}>
+          <Text style={styles.para2r}>Algorithme Unique</Text>
+          <Text style={styles.para2b}>
+            Notre système utilise vos intentions, combinées à la magie du nombre
+            d’or, pour créer des numéros pour le Loto, l’Euromillions, et
+            Eurodreams.
+          </Text>
+        </View>
+        <View style={styles.para2Bloc}>
+          <Text style={styles.para2r}>Le Nombre d’Or</Text>
+          <Text style={styles.para2b}>
+            Intégré dans notre algorithme, ce ratio mathématique mythique est
+            réputé pour attirer la chance et l’harmonie, ajoutant une dimension
+            supplémentaire de magie à vos numéros. Facile à Utiliser : Entrez
+            simplement votre phrase et choisissez votre jeu. Notre algorithme
+            fait le reste, en espérant transformer positivité et amour en
+            fortune.
+          </Text>
+        </View>
+        <View style={styles.para3Bloc}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate("Jouer")}
+          >
+            <Ionicons name="heart" size={20} color="#FFFFFF" />
+            {/* Icon inside the button */}
+            <Text style={styles.buttonText}>C'est parti !</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScrollView>
   );
@@ -139,6 +183,55 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     textAlign: "center",
     fontSize: 16,
+  },
+  para2Bloc: {
+    flexGrow: 1,
+    justifyContent: "flex-start",
+    alignItems: "center",
+    //minHeight: height,
+    paddingTop: 40,
+  },
+  para2r: {
+    fontSize: 14,
+    //fontFamily: "lemonregular",
+    //fontFamily: "ralewaythin",
+    //fontFamily: "ralewayextraBold",
+    fontFamily: "robotoregular",
+    //color: "#e0b0ff",
+    color: "#FF48C4",
+    textAlign: "center",
+    marginBottom: 15,
+    marginTop: 5,
+    marginHorizontal: 20,
+    lineHeight: 25,
+  },
+  para3Bloc: {
+    flexGrow: 1,
+    justifyContent: "flex-start",
+    alignItems: "center",
+    //minHeight: height,
+    marginBottom: 95,
+  },
+  lienBloc: {
+    flexGrow: 1,
+    justifyContent: "flex-end",
+    alignItems: "center",
+    //minHeight: height,
+    marginBottom: 95,
+  },
+  para2b: {
+    fontSize: 14,
+    //fontFamily: "lemonregular",
+    //fontFamily: "ralewaythin",
+    //fontFamily: "ralewayextraBold",
+    fontFamily: "robotoregular",
+    //color: "#e0b0ff",
+    color: "#FFF",
+    textAlign: "center",
+    marginBottom: 15,
+    marginTop: 5,
+    marginHorizontal: 20,
+    lineHeight: 25,
   },
 
   neonContainer: {
