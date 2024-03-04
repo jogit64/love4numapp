@@ -41,6 +41,7 @@ const Love4NumWidget = () => {
     setLotoComplementaire(null);
     setStatsNumeros([]); // Assurez-vous que cela réinitialise les statistiques correctement pour le contexte actuel
     setChanceNumberStats(null);
+    setJeuSelectionne(null);
 
     // Réinitialisation pour Euromillions
     setEuromillionsNumbers([]);
@@ -97,17 +98,17 @@ const Love4NumWidget = () => {
     </TouchableOpacity>
   );
 
-  const EtoileEuromillions = ({ numero }) => {
-    return (
-      <View style={AppStyles.etoileContainer}>
-        <Image
-          source={require("../assets/etoile5.png")}
-          style={AppStyles.etoileBackground}
-        />
-        <Text style={AppStyles.etoileNumero}>{numero}</Text>
-      </View>
-    );
-  };
+  // const EtoileEuromillions = ({ numero }) => {
+  //   return (
+  //     <View style={AppStyles.etoileContainer}>
+  //       <Image
+  //         source={require("../assets/etoile5.png")}
+  //         style={AppStyles.etoileBackground}
+  //       />
+  //       <Text style={AppStyles.etoileNumero}>{numero}</Text>
+  //     </View>
+  //   );
+  // };
 
   SplashScreen.preventAutoHideAsync();
 
