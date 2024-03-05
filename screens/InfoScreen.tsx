@@ -73,7 +73,7 @@ const InfoScreen = () => {
         </Text>
         <Text style={styles.para2r}>Tirage classique</Text>
         <Text style={styles.para2bn}>5 numéros (1 - 49)</Text>
-        <Text style={styles.para2nb}>1 numéros complémentaire (1 - 10)</Text>
+        <Text style={styles.para2bn}>1 numéros complémentaire (1 - 10)</Text>
         <Text style={styles.para2r}>Tirage européen</Text>
         <Text style={styles.para2bn}>5 numéros (1 - 50)</Text>
         <Text style={styles.para2bn}>2 numéros complémentaires (1 - 12)</Text>

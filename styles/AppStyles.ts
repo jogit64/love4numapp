@@ -5,7 +5,7 @@ const AppStyles = StyleSheet.create({
     flex: 1,
     //backgroundColor: "#fb21ff", // Un fond violet vif pour l'énergie
     backgroundColor: "#0F052C", // Un fond violet vif pour l'énergie
-    marginBottom: 40,
+    //marginBottom: 80,
   },
   content: {
     flexGrow: 1,

@@ -24,15 +24,13 @@ const CreditsScreen = ({ navigation }) => {
         Merci d'utiliser [Nom de l'App] ! Nous travaillons constamment pour
         améliorer votre expérience.
       </Text>
-
-      <TouchableOpacity
-        onPress={() => openURL("https://votrepolitiquedeconfidentialite.com")}
-      >
-        <Text style={styles.lien}>Politique de confidentialité</Text>
+      {/* Remplacez openURL par navigation.navigate pour les écrans internes */}
+      <TouchableOpacity onPress={() => navigation.navigate("LegalMentions")}>
+        <Text style={styles.lien}>Mentions Légales</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate("Jouer")}>
-        <Text style={styles.lien}>Conditions d'utilisation</Text>
+      <TouchableOpacity onPress={() => navigation.navigate("PrivacyPolicy")}>
+        <Text style={styles.lien}>Politique de confidentialité</Text>
       </TouchableOpacity>
 
       <Text style={styles.text}>
