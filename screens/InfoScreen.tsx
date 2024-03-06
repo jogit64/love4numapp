@@ -71,16 +71,22 @@ const InfoScreen = () => {
           l'amour, l'espoir, et la positivité en numéros porte-bonheur pour des
           jeux de loteries françaises.
         </Text>
-        <Text style={styles.para2r}>Tirage classique</Text>
-        <Text style={styles.para2bn}>5 numéros (1 - 49)</Text>
-        <Text style={styles.para2bn}>1 numéros complémentaire (1 - 10)</Text>
-        <Text style={styles.para2r}>Tirage européen</Text>
-        <Text style={styles.para2bn}>5 numéros (1 - 50)</Text>
-        <Text style={styles.para2bn}>2 numéros complémentaires (1 - 12)</Text>
+        <View style={styles.para2Bloc}>
+          <Text style={styles.para2r}>Tirage classique</Text>
+          <Text style={styles.para2b}>5 numéros (1 - 49)</Text>
+          <Text style={styles.para2b}>1 numéros complémentaire (1 - 10)</Text>
+        </View>
+        <View style={styles.para2Bloc}>
+          <Text style={styles.para2r}>Tirage européen</Text>
+          <Text style={styles.para2b}>5 numéros (1 - 50)</Text>
+          <Text style={styles.para2b}>2 numéros complémentaires (1 - 12)</Text>
+        </View>
+        <View style={styles.para2Bloc}>
+          <Text style={styles.para2r}>Tirage rêves</Text>
+          <Text style={styles.para2b}>6 numéros (1 - 40)</Text>
+          <Text style={styles.para2b}>1 numéros complémentaires (1 - 5)</Text>
+        </View>
 
-        <Text style={styles.para2r}>Tirage rêves</Text>
-        <Text style={styles.para2bn}>6 numéros (1 - 40)</Text>
-        <Text style={styles.para2bn}>1 numéros complémentaires (1 - 5)</Text>
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate("Jouer")}
@@ -123,16 +129,16 @@ const InfoScreen = () => {
             fortune.
           </Text>
         </View>
-        <View style={styles.para3Bloc}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => navigation.navigate("Jouer")}
-          >
-            <Ionicons name="heart" size={20} color="#FFFFFF" />
-            {/* Icon inside the button */}
-            <Text style={styles.buttonText}>C'est parti !</Text>
-          </TouchableOpacity>
-        </View>
+        {/* <View style={styles.para3Bloc}> */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("Jouer")}
+        >
+          <Ionicons name="heart" size={20} color="#FFFFFF" />
+          {/* Icon inside the button */}
+          <Text style={styles.buttonText}>C'est parti !</Text>
+        </TouchableOpacity>
+        {/* </View> */}
       </View>
     </ScrollView>
   );
@@ -175,7 +181,7 @@ const styles = StyleSheet.create({
     //color: "#e0b0ff",
     color: "#fff",
     textAlign: "center",
-    marginBottom: 15,
+    // marginBottom: 15,
     marginTop: 5,
     marginHorizontal: 20,
     lineHeight: 25,
@@ -183,10 +189,11 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: "row", // Ensure icon and text are in a row
     alignItems: "center", // Align items in the center
-    marginTop: 40,
+    marginTop: 60,
     backgroundColor: "#FF48C4",
     padding: 10,
     borderRadius: 20,
+    marginBottom: 35,
   },
   buttonText: {
     marginLeft: 10, // Add space between icon and text
@@ -199,7 +206,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
     //minHeight: height,
-    paddingTop: 40,
+    paddingTop: 25,
   },
   para2r: {
     fontSize: 14,
@@ -238,8 +245,8 @@ const styles = StyleSheet.create({
     //color: "#e0b0ff",
     color: "#FFF",
     textAlign: "center",
-    marginBottom: 15,
-    marginTop: 5,
+    // marginBottom: 15,
+    // marginTop: 5,
     marginHorizontal: 20,
     lineHeight: 25,
   },
