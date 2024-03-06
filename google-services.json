@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "122238583413",
+    "project_id": "love4num-3ffd4",
+    "storage_bucket": "love4num-3ffd4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:122238583413:android:a90d516fe1583d82b22e3c",
+        "android_client_info": {
+          "package_name": "com.souda.love4num"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNa_69FbEWLU3lHuruculscUOmiD31z3M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
