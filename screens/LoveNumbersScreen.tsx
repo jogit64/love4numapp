@@ -30,9 +30,16 @@ import EuromillionsDisplay from "../components/EuromillionsDisplay";
 import EurodreamsDisplay from "../components/EurodreamsDisplay";
 import CustomLoader from "../components/CustomLoader";
 
+import {
+  LotoDisplayProps,
+  EuromillionsDisplayProps,
+  EurodreamsDisplayProps,
+  Stat,
+} from "../GameTypes";
+
 const { width, height } = Dimensions.get("window");
 
-const Love4NumWidget = () => {
+const Love4NumWidget: FC = () => {
   const handleReset = () => {
     // Réinitialisation pour le Loto
     setLotoNumbers([]);
@@ -60,21 +67,28 @@ const Love4NumWidget = () => {
   const [phrase, setPhrase] = useState("");
   const [jeuSelectionne, setJeuSelectionne] = useState<string | null>(null);
 
-  const [lotoNumbers, setLotoNumbers] = useState([]);
-  const [lotoComplementaire, setLotoComplementaire] = useState(null);
+  const [lotoNumbers, setLotoNumbers] = useState<number[]>([]);
+  const [lotoComplementaire, setLotoComplementaire] = useState<number | null>(
+    null
+  );
+  const [statsNumeros, setStatsNumeros] = useState<Stat[]>([]);
+  const [chanceNumberStats, setChanceNumberStats] = useState<Stat | null>(null);
 
-  const [euromillionsNumbers, setEuromillionsNumbers] = useState([]);
-  const [euromillionsEtoiles, setEuromillionsEtoiles] = useState([]);
+  const [euromillionsNumbers, setEuromillionsNumbers] = useState<number[]>([]);
+  const [euromillionsEtoiles, setEuromillionsEtoiles] = useState<number[]>([]);
+  const [statsNumerosEuromillions, setStatsNumerosEuromillions] = useState<
+    Stat[]
+  >([]);
+  const [statsEtoilesEuromillions, setStatsEtoilesEuromillions] = useState<
+    Stat[]
+  >([]);
 
-  const [eurodreamsNumbers, setEurodreamsNumbers] = useState([]);
-  const [eurodreamsDream, setEurodreamsDream] = useState(null);
-
-  const [statsNumeros, setStatsNumeros] = useState([]);
-  const [chanceNumberStats, setChanceNumberStats] = useState(null);
-  const [statsNumerosEuromillions, setStatsNumerosEuromillions] = useState([]);
-  const [statsEtoilesEuromillions, setStatsEtoilesEuromillions] = useState([]);
-  const [statsNumerosEurodreams, setStatsNumerosEurodreams] = useState([]);
-  const [statsDream, setStatsDream] = useState(null);
+  const [eurodreamsNumbers, setEurodreamsNumbers] = useState<number[]>([]);
+  const [eurodreamsDream, setEurodreamsDream] = useState<number | null>(null);
+  const [statsNumerosEurodreams, setStatsNumerosEurodreams] = useState<Stat[]>(
+    []
+  );
+  const [statsDream, setStatsDream] = useState<Stat | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -113,8 +127,12 @@ const Love4NumWidget = () => {
     return null;
   }
 
-  const genererNumerosUniques = (debut, fin, count) => {
-    let numeros = new Set();
+  const genererNumerosUniques = (
+    debut: number,
+    fin: number,
+    count: number
+  ): number[] => {
+    let numeros = new Set<number>();
     while (numeros.size < count) {
       numeros.add(Math.floor(Math.random() * (fin - debut + 1)) + debut);
     }
@@ -123,7 +141,9 @@ const Love4NumWidget = () => {
 
   const NOMBRE_D_OR = 1.618033988749895;
 
-  const genererNumerosLoto = async (jeu) => {
+  const genererNumerosLoto = async (
+    jeu: "loto" | "euromillions" | "eurodreams"
+  ) => {
     setIsLoading(true);
     if (!phrase) {
       alert(
@@ -300,9 +320,8 @@ const Love4NumWidget = () => {
             // imageSource={require("../assets/dreams.png")}
             // label="Eurodreams"
             imageSource={require("../assets/iconlov4_3.png")}
-            label="Eurodreams"
-            jeuId="eurodreams"
             label="Rêves"
+            jeuId="eurodreams"
           />
         </View>
 
