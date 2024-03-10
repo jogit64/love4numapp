@@ -7,7 +7,7 @@ import AppStyles from "../styles/AppStyles";
 // Interface pour les props d'EurodreamsDisplay
 interface EurodreamsDisplayProps {
   eurodreamsNumbers: number[];
-  eurodreamsDream: number;
+  eurodreamsDream: number | null; // Autoriser null comme valeur possible
   statsNumeros: any[]; // À adapter avec un type plus spécifique si possible
   statsDream: any; // À adapter avec un type plus spécifique si possible
 }
