@@ -263,6 +263,11 @@ const AppStyles = StyleSheet.create({
   stats: {
     marginTop: 5,
   },
+  statItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    //marginVertical: 5,
+  },
   statText: {
     fontSize: 14,
     fontFamily: "robotoregular",

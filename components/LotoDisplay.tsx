@@ -4,12 +4,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { calculateExactDrawsSinceLastOut } from "../utils/dateUtils";
 import AppStyles from "../styles/AppStyles";
 
-interface LotoDisplayProps {
-  lotoNumbers: number[];
-  lotoComplementaire: number;
-  statsNumeros: any[]; // Remplacez any par un type plus spécifique si possible
-  chanceNumberStats: any; // Remplacez any par un type plus spécifique si possible
-}
+import { LotoDisplayProps } from "../GameTypes";
 
 const LotoDisplay: React.FC<LotoDisplayProps> = ({
   lotoNumbers,

@@ -3,14 +3,9 @@ import { View, Text, Image } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { calculateExactDrawsSinceLastOut } from "../utils/dateUtils";
 import AppStyles from "../styles/AppStyles";
-import { Stat } from "../GameTypes"; // Assure-toi que le chemin d'importation est correct
+import { Stat } from "../GameTypes";
 
-interface EuromillionsDisplayProps {
-  euromillionsNumbers: number[];
-  euromillionsEtoiles: number[];
-  statsNumeros: Stat[]; // Utilise Stat si elle correspond à la structure des données de tes stats
-  statsEtoiles: Stat[]; // Utilise Stat si elle correspond à la structure des données de tes stats
-}
+import { EuromillionsDisplayProps } from "../GameTypes";
 
 const EuromillionsDisplay: React.FC<EuromillionsDisplayProps> = ({
   euromillionsNumbers,
