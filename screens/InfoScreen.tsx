@@ -9,11 +9,8 @@ import {
   Dimensions,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { useFonts } from "expo-font";
-import * as SplashScreen from "expo-splash-screen";
+
 import Ionicons from "react-native-vector-icons/Ionicons"; // Import Ionicons
-import LoveNumbers from "./LoveNumbersScreen";
-import { useNavigation } from "@react-navigation/native";
 
 import { JouerScreenNavigationProp } from "../NavigationTypes";
 
