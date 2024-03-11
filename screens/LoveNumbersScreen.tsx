@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, FC } from "react";
 import {
   View,
   Text,
@@ -30,9 +30,12 @@ import EuromillionsDisplay from "../components/EuromillionsDisplay";
 import EurodreamsDisplay from "../components/EurodreamsDisplay";
 import CustomLoader from "../components/CustomLoader";
 
+import { Stat } from "../GameTypes";
+import { GameSelectorProps } from "../GameTypes";
+
 const { width, height } = Dimensions.get("window");
 
-const Love4NumWidget = () => {
+const Love4NumWidget: FC = () => {
   const handleReset = () => {
     // Réinitialisation pour le Loto
     setLotoNumbers([]);
@@ -60,25 +63,37 @@ const Love4NumWidget = () => {
   const [phrase, setPhrase] = useState("");
   const [jeuSelectionne, setJeuSelectionne] = useState<string | null>(null);
 
-  const [lotoNumbers, setLotoNumbers] = useState([]);
-  const [lotoComplementaire, setLotoComplementaire] = useState(null);
+  const [lotoNumbers, setLotoNumbers] = useState<number[]>([]);
+  const [lotoComplementaire, setLotoComplementaire] = useState<number | null>(
+    null
+  );
+  const [statsNumeros, setStatsNumeros] = useState<Stat[]>([]);
+  const [chanceNumberStats, setChanceNumberStats] = useState<Stat | null>(null);
 
-  const [euromillionsNumbers, setEuromillionsNumbers] = useState([]);
-  const [euromillionsEtoiles, setEuromillionsEtoiles] = useState([]);
+  const [euromillionsNumbers, setEuromillionsNumbers] = useState<number[]>([]);
+  const [euromillionsEtoiles, setEuromillionsEtoiles] = useState<number[]>([]);
+  const [statsNumerosEuromillions, setStatsNumerosEuromillions] = useState<
+    Stat[]
+  >([]);
+  const [statsEtoilesEuromillions, setStatsEtoilesEuromillions] = useState<
+    Stat[]
+  >([]);
 
-  const [eurodreamsNumbers, setEurodreamsNumbers] = useState([]);
-  const [eurodreamsDream, setEurodreamsDream] = useState(null);
-
-  const [statsNumeros, setStatsNumeros] = useState([]);
-  const [chanceNumberStats, setChanceNumberStats] = useState(null);
-  const [statsNumerosEuromillions, setStatsNumerosEuromillions] = useState([]);
-  const [statsEtoilesEuromillions, setStatsEtoilesEuromillions] = useState([]);
-  const [statsNumerosEurodreams, setStatsNumerosEurodreams] = useState([]);
-  const [statsDream, setStatsDream] = useState(null);
+  const [eurodreamsNumbers, setEurodreamsNumbers] = useState<number[]>([]);
+  const [eurodreamsDream, setEurodreamsDream] = useState<number | null>(null);
+  const [statsNumerosEurodreams, setStatsNumerosEurodreams] = useState<Stat[]>(
+    []
+  );
+  const [statsDream, setStatsDream] = useState<Stat | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const GameSelector = ({ onPress, imageSource, label, jeuId }) => (
+  const GameSelector: React.FC<GameSelectorProps> = ({
+    onPress,
+    imageSource,
+    label,
+    jeuId,
+  }) => (
     <TouchableOpacity
       onPress={() => {
         setJeuSelectionne(jeuId);
@@ -113,8 +128,12 @@ const Love4NumWidget = () => {
     return null;
   }
 
-  const genererNumerosUniques = (debut, fin, count) => {
-    let numeros = new Set();
+  const genererNumerosUniques = (
+    debut: number,
+    fin: number,
+    count: number
+  ): number[] => {
+    let numeros = new Set<number>();
     while (numeros.size < count) {
       numeros.add(Math.floor(Math.random() * (fin - debut + 1)) + debut);
     }
@@ -123,7 +142,9 @@ const Love4NumWidget = () => {
 
   const NOMBRE_D_OR = 1.618033988749895;
 
-  const genererNumerosLoto = async (jeu) => {
+  const genererNumerosLoto = async (
+    jeu: "loto" | "euromillions" | "eurodreams"
+  ) => {
     setIsLoading(true);
     if (!phrase) {
       alert(
@@ -142,13 +163,18 @@ const Love4NumWidget = () => {
     // Ajuste la graine en utilisant le nombre d'or
     const seedAjustee = (seedBase * NOMBRE_D_OR) % 1; // Utilise le reste de la division pour garder un nombre entre 0 et 1
 
-    const fetchStatsForNumber = async (numero, type, collectionName) => {
+    const fetchStatsForNumber = async (
+      numero: number,
+      type: string,
+      collectionName: string
+    ): Promise<Stat | null> => {
       try {
         const docRef = doc(db, collectionName, `${numero}_${type}`);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          return docSnap.data();
+          const data = docSnap.data() as Stat; // Cast en tant que FirestoreStat
+          return data; // Retourne directement les données, qui correspondent maintenant à l'interface
         } else {
           console.log("Statistiques non disponibles !");
           return null;
@@ -161,58 +187,105 @@ const Love4NumWidget = () => {
 
     switch (jeu) {
       case "loto":
-        seedrandom(seedAjustee, { global: true });
-        const numerosLoto = genererNumerosUniques(1, 49, 5);
-        const numeroComplementaireLoto = Math.floor(Math.random() * 10) + 1;
+        try {
+          //seedrandom(seedAjustee, { global: true });
+          // Convertit seedAjustee en chaîne de caractères
+          seedrandom(seedAjustee.toString(), { global: true });
 
-        // Récupération des statistiques pour tous les numéros, y compris le numéro complémentaire
-        const statsPromisesLoto = numerosLoto.map((numero) =>
-          fetchStatsForNumber(numero, "principal", "lotoStats")
-        );
-        const statsChancePromiseLoto = fetchStatsForNumber(
-          numeroComplementaireLoto,
-          "chance",
-          "lotoStats"
-        );
+          const numerosLoto = genererNumerosUniques(1, 49, 5);
+          const numeroComplementaireLoto = Math.floor(Math.random() * 10) + 1;
 
-        // Attendre que toutes les promesses se résolvent
-        const resolvedStatsLoto = await Promise.all(statsPromisesLoto);
-        const resolvedStatsChanceLoto = await statsChancePromiseLoto; // Pas besoin d'utiliser Promise.all pour une seule promesse
+          // Récupération des statistiques pour tous les numéros, y compris le numéro complémentaire
+          const statsPromisesLoto = numerosLoto.map((numero) =>
+            fetchStatsForNumber(numero, "principal", "lotoStats")
+          );
+          const statsChancePromiseLoto = fetchStatsForNumber(
+            numeroComplementaireLoto,
+            "chance",
+            "lotoStats"
+          );
 
-        // Mettre à jour tous les états en une seule opération pour éviter des rendus partiels
-        setLotoNumbers(numerosLoto);
-        setLotoComplementaire(numeroComplementaireLoto);
-        setStatsNumeros(resolvedStatsLoto);
-        setChanceNumberStats(resolvedStatsChanceLoto); // Directement assigné sans utiliser [0] puisque nous n'utilisons pas Promise.all ici
-        setIsLoading(false);
+          // Attendre que toutes les promesses se résolvent
+          const resolvedStatsLoto = await Promise.all(statsPromisesLoto);
+          const resolvedStatsChanceLoto = await statsChancePromiseLoto;
+
+          // Filtrer les valeurs null des statistiques résolues
+          const filteredStatsLoto = resolvedStatsLoto.filter(
+            (stat) => stat !== null
+          ) as Stat[];
+          const filteredStatsChanceLoto = resolvedStatsChanceLoto
+            ? [resolvedStatsChanceLoto]
+            : [];
+
+          // Mettre à jour tous les états avec les données filtrées
+          setLotoNumbers(numerosLoto);
+          setLotoComplementaire(numeroComplementaireLoto);
+          setStatsNumeros(filteredStatsLoto); // Utiliser les données filtrées
+          setChanceNumberStats(
+            filteredStatsChanceLoto.length > 0
+              ? filteredStatsChanceLoto[0]
+              : null
+          ); // Ajustement pour un seul résultat ou null
+        } catch (error) {
+          console.error(
+            "Une erreur est survenue lors de la récupération des statistiques :",
+            error
+          );
+        } finally {
+          setIsLoading(false);
+        }
         break;
 
       case "euromillions":
-        seedrandom(seedAjustee, { global: true });
-        const numerosEuromillions = genererNumerosUniques(1, 50, 5);
-        const etoilesEuromillions = genererNumerosUniques(1, 12, 2);
+        try {
+          //seedrandom(seedAjustee, { global: true });
+          // Convertit seedAjustee en chaîne de caractères
+          seedrandom(seedAjustee.toString(), { global: true });
 
-        // Récupération des statistiques pour les numéros et étoiles d'Euromillions
-        const statsNumerosPromises = numerosEuromillions.map((numero) =>
-          fetchStatsForNumber(numero, "principal", "euromillionsStats")
-        );
-        const statsEtoilesPromises = etoilesEuromillions.map((etoile) =>
-          fetchStatsForNumber(etoile, "chance", "euromillionsStats")
-        );
+          const numerosEuromillions = genererNumerosUniques(1, 50, 5);
+          const etoilesEuromillions = genererNumerosUniques(1, 12, 2);
 
-        const resolvedStatsNumeros = await Promise.all(statsNumerosPromises);
-        const resolvedStatsEtoiles = await Promise.all(statsEtoilesPromises);
+          // Récupération des statistiques pour les numéros et étoiles d'Euromillions
+          const statsNumerosPromises = numerosEuromillions.map((numero) =>
+            fetchStatsForNumber(numero, "principal", "euromillionsStats")
+          );
+          const statsEtoilesPromises = etoilesEuromillions.map((etoile) =>
+            fetchStatsForNumber(etoile, "chance", "euromillionsStats")
+          );
 
-        setEuromillionsNumbers(numerosEuromillions);
-        setEuromillionsEtoiles(etoilesEuromillions);
-        setStatsNumerosEuromillions(resolvedStatsNumeros);
-        setStatsEtoilesEuromillions(resolvedStatsEtoiles);
-        setIsLoading(false);
+          // Attendre que toutes les promesses se résolvent
+          const resolvedStatsNumeros = await Promise.all(statsNumerosPromises);
+          const resolvedStatsEtoiles = await Promise.all(statsEtoilesPromises);
+
+          // Filtrer les valeurs null des statistiques résolues pour les numéros et étoiles
+          const filteredStatsNumeros = resolvedStatsNumeros.filter(
+            (stat) => stat !== null
+          ) as Stat[];
+          const filteredStatsEtoiles = resolvedStatsEtoiles.filter(
+            (stat) => stat !== null
+          ) as Stat[];
+
+          // Mettre à jour tous les états avec les données filtrées
+          setEuromillionsNumbers(numerosEuromillions);
+          setEuromillionsEtoiles(etoilesEuromillions);
+          setStatsNumerosEuromillions(filteredStatsNumeros); // Utiliser les données filtrées pour les numéros
+          setStatsEtoilesEuromillions(filteredStatsEtoiles); // Utiliser les données filtrées pour les étoiles
+        } catch (error) {
+          console.error(
+            "Une erreur est survenue lors de la récupération des statistiques pour Euromillions:",
+            error
+          );
+        } finally {
+          setIsLoading(false);
+        }
         break;
 
       case "eurodreams":
         try {
-          seedrandom(seedAjustee, { global: true });
+          //seedrandom(seedAjustee, { global: true });
+          // Convertit seedAjustee en chaîne de caractères
+          seedrandom(seedAjustee.toString(), { global: true });
+
           const numerosEurodreams = genererNumerosUniques(1, 40, 6);
           const numeroDreamEurodreams = Math.floor(Math.random() * 5) + 1;
 
@@ -231,13 +304,24 @@ const Love4NumWidget = () => {
           );
           const resolvedStatsDream = await statsDreamPromise;
 
+          // Filtrer les valeurs null des statistiques résolues
+          const filteredStatsNumerosEurodreams =
+            resolvedStatsNumerosEurodreams.filter(
+              (stat) => stat !== null
+            ) as Stat[];
+          const filteredStatsDream = resolvedStatsDream
+            ? [resolvedStatsDream]
+            : [];
+
           setEurodreamsNumbers(numerosEurodreams);
           setEurodreamsDream(numeroDreamEurodreams);
-          setStatsNumerosEurodreams(resolvedStatsNumerosEurodreams);
-          setStatsDream(resolvedStatsDream);
+          setStatsNumerosEurodreams(filteredStatsNumerosEurodreams); // Utiliser les données filtrées
+          setStatsDream(
+            filteredStatsDream.length > 0 ? filteredStatsDream[0] : null
+          ); // Ajustement pour un seul résultat ou null
         } catch (error) {
           console.error(
-            "Une erreur est survenue lors de la récupération des statistiques : ",
+            "Une erreur est survenue lors de la récupération des statistiques :",
             error
           );
         } finally {
@@ -300,9 +384,8 @@ const Love4NumWidget = () => {
             // imageSource={require("../assets/dreams.png")}
             // label="Eurodreams"
             imageSource={require("../assets/iconlov4_3.png")}
-            label="Eurodreams"
-            jeuId="eurodreams"
             label="Rêves"
+            jeuId="eurodreams"
           />
         </View>
 

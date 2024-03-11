@@ -34,5 +34,10 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+<<<<<<< HEAD
 # crédits firebase
 firebaseConfig.js
+=======
+# Firebase config
+firebaseConfig.ts
+>>>>>>> APP_OK

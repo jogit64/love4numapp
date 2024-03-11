@@ -9,16 +9,21 @@ import {
   Dimensions,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { useFonts } from "expo-font";
-import * as SplashScreen from "expo-splash-screen";
+
 import Ionicons from "react-native-vector-icons/Ionicons"; // Import Ionicons
-import LoveNumbers from "./LoveNumbersScreen";
-import { useNavigation } from "@react-navigation/native";
+
+import { JouerScreenNavigationProp } from "../NavigationTypes";
+
+// Props du composant incluant le type de navigation
+type Props = {
+  navigation: JouerScreenNavigationProp;
+};
+
 const { width, height } = Dimensions.get("window");
 
-const InfoScreen = () => {
+const InfoScreen: React.FC<Props> = ({ navigation }) => {
   // SplashScreen.preventAutoHideAsync();
-  const navigation = useNavigation();
+  //const navigation = useNavigation();
 
   //   const [fontsLoaded, fontError] = useFonts({
   //     hennypennyregular: require("../assets/fonts/hennypennyregular.ttf"),

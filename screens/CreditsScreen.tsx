@@ -8,9 +8,22 @@ import {
   Linking,
 } from "react-native";
 
-const CreditsScreen = ({ navigation }) => {
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "../NavigationTypes"; // Ajustez le chemin selon l'emplacement de votre fichier
+
+type CreditsScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  "Crédits"
+>; // Assurez-vous que 'Credits' est bien défini dans RootStackParamList
+
+type Props = {
+  navigation: CreditsScreenNavigationProp;
+};
+
+const CreditsScreen: React.FC<Props> = ({ navigation }) => {
+  // ...
   // Fonction pour ouvrir des liens
-  const openURL = (url) => {
+  const openURL = (url: string) => {
     Linking.openURL(url).catch((err) =>
       console.error("An error occurred", err)
     );

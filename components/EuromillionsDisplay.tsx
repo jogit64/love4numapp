@@ -3,15 +3,21 @@ import { View, Text, Image } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { calculateExactDrawsSinceLastOut } from "../utils/dateUtils";
 import AppStyles from "../styles/AppStyles";
+import { Stat } from "../GameTypes";
 
-const EuromillionsDisplay = ({
+import { EuromillionsDisplayProps } from "../GameTypes";
+import { EtoileEuromillionsProps } from "../GameTypes";
+
+const EuromillionsDisplay: React.FC<EuromillionsDisplayProps> = ({
   euromillionsNumbers,
   euromillionsEtoiles,
   statsNumeros,
   statsEtoiles,
 }) => {
   // Composant pour afficher les étoiles avec l'image de fond
-  const EtoileEuromillions = ({ numero }) => (
+  const EtoileEuromillions: React.FC<EtoileEuromillionsProps> = ({
+    numero,
+  }) => (
     <View style={AppStyles.etoileContainer}>
       <Image
         source={require("../assets/etoile5.png")} // Assurez-vous que le chemin vers votre image est correct

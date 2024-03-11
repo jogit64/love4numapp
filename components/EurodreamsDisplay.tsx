@@ -4,13 +4,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { calculateExactDrawsSinceLastOut } from "../utils/dateUtils";
 import AppStyles from "../styles/AppStyles";
 
-// Interface pour les props d'EurodreamsDisplay
-interface EurodreamsDisplayProps {
-  eurodreamsNumbers: number[];
-  eurodreamsDream: number;
-  statsNumeros: any[]; // À adapter avec un type plus spécifique si possible
-  statsDream: any; // À adapter avec un type plus spécifique si possible
-}
+import { EurodreamsDisplayProps } from "../GameTypes";
 
 const EurodreamsDisplay: React.FC<EurodreamsDisplayProps> = ({
   eurodreamsNumbers,
