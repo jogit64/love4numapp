@@ -271,6 +271,7 @@ const AppStyles = StyleSheet.create({
   statText: {
     fontSize: 14,
     fontFamily: "robotoregular",
+    marginLeft: 5,
   },
   legend: {
     marginTop: 20,

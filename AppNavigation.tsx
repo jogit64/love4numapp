@@ -28,13 +28,15 @@ export default function AppNavigation() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
+          let iconName: React.ComponentProps<typeof Ionicons>["name"];
           if (route.name === "Accueil") {
             iconName = focused ? "home" : "home-outline";
           } else if (route.name === "Jouer") {
             iconName = focused ? "heart" : "heart-outline";
           } else if (route.name === "Crédits") {
             iconName = focused ? "card" : "card-outline";
+          } else {
+            iconName = "alert"; // Valeur par défaut au cas où aucun des cas ci-dessus ne correspond
           }
           return (
             <Ionicons
@@ -44,6 +46,7 @@ export default function AppNavigation() {
             />
           );
         },
+
         tabBarStyle: {
           backgroundColor: "#FF48C4",
           //   borderTopWidth: 1,

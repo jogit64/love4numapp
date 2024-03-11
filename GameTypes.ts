@@ -22,9 +22,20 @@ export interface EuromillionsDisplayProps {
   statsEtoiles: Stat[];
 }
 
+export interface EtoileEuromillionsProps {
+  numero: number;
+}
+
 export interface EurodreamsDisplayProps {
   eurodreamsNumbers: number[];
   eurodreamsDream: number | null;
   statsNumeros: Stat[];
   statsDream: Stat | null;
+}
+
+export interface GameSelectorProps {
+  onPress: () => void; // Supposant que onPress est une fonction qui ne prend aucun argument et ne retourne rien
+  imageSource: any; // Remplacez `any` par le type approprié, par exemple React Native's ImageSourcePropType si c'est une source d'image
+  label: string;
+  jeuId: string;
 }

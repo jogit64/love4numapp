@@ -31,6 +31,7 @@ import EurodreamsDisplay from "../components/EurodreamsDisplay";
 import CustomLoader from "../components/CustomLoader";
 
 import { Stat } from "../GameTypes";
+import { GameSelectorProps } from "../GameTypes";
 
 const { width, height } = Dimensions.get("window");
 
@@ -87,7 +88,12 @@ const Love4NumWidget: FC = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const GameSelector = ({ onPress, imageSource, label, jeuId }) => (
+  const GameSelector: React.FC<GameSelectorProps> = ({
+    onPress,
+    imageSource,
+    label,
+    jeuId,
+  }) => (
     <TouchableOpacity
       onPress={() => {
         setJeuSelectionne(jeuId);
@@ -182,7 +188,10 @@ const Love4NumWidget: FC = () => {
     switch (jeu) {
       case "loto":
         try {
-          seedrandom(seedAjustee, { global: true });
+          //seedrandom(seedAjustee, { global: true });
+          // Convertit seedAjustee en chaîne de caractères
+          seedrandom(seedAjustee.toString(), { global: true });
+
           const numerosLoto = genererNumerosUniques(1, 49, 5);
           const numeroComplementaireLoto = Math.floor(Math.random() * 10) + 1;
 
@@ -229,7 +238,10 @@ const Love4NumWidget: FC = () => {
 
       case "euromillions":
         try {
-          seedrandom(seedAjustee, { global: true });
+          //seedrandom(seedAjustee, { global: true });
+          // Convertit seedAjustee en chaîne de caractères
+          seedrandom(seedAjustee.toString(), { global: true });
+
           const numerosEuromillions = genererNumerosUniques(1, 50, 5);
           const etoilesEuromillions = genererNumerosUniques(1, 12, 2);
 
@@ -270,7 +282,10 @@ const Love4NumWidget: FC = () => {
 
       case "eurodreams":
         try {
-          seedrandom(seedAjustee, { global: true });
+          //seedrandom(seedAjustee, { global: true });
+          // Convertit seedAjustee en chaîne de caractères
+          seedrandom(seedAjustee.toString(), { global: true });
+
           const numerosEurodreams = genererNumerosUniques(1, 40, 6);
           const numeroDreamEurodreams = Math.floor(Math.random() * 5) + 1;
 

@@ -6,6 +6,7 @@ import AppStyles from "../styles/AppStyles";
 import { Stat } from "../GameTypes";
 
 import { EuromillionsDisplayProps } from "../GameTypes";
+import { EtoileEuromillionsProps } from "../GameTypes";
 
 const EuromillionsDisplay: React.FC<EuromillionsDisplayProps> = ({
   euromillionsNumbers,
@@ -14,7 +15,9 @@ const EuromillionsDisplay: React.FC<EuromillionsDisplayProps> = ({
   statsEtoiles,
 }) => {
   // Composant pour afficher les étoiles avec l'image de fond
-  const EtoileEuromillions = ({ numero }) => (
+  const EtoileEuromillions: React.FC<EtoileEuromillionsProps> = ({
+    numero,
+  }) => (
     <View style={AppStyles.etoileContainer}>
       <Image
         source={require("../assets/etoile5.png")} // Assurez-vous que le chemin vers votre image est correct
