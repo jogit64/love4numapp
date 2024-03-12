@@ -1,9 +1,13 @@
-//import React from "react";
+// Au début du fichier, ajoutez l'importation de SafeAreaProvider
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import React, { useState, useEffect, useCallback } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import AppNavigation from "./AppNavigation";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+import { enableScreens } from "react-native-screens";
+
+enableScreens();
 
 export default function App() {
   SplashScreen.preventAutoHideAsync(); // Empêche le splash screen de disparaître automatiquement
@@ -31,8 +35,11 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <AppNavigation />
-    </NavigationContainer>
+    // Ici, SafeAreaProvider englobe NavigationContainer
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <AppNavigation />
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
