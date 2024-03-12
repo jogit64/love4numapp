@@ -1,3 +1,4 @@
+// LoveNumbersScreen.tsx
 import React, { useState, FC } from "react";
 import {
   View,
@@ -19,7 +20,8 @@ import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
 
 import { db } from "../firebaseConfig";
-import { collection, getDocs } from "firebase/firestore";
+
+//import { collection, getDocs } from "firebase/firestore";
 
 import { doc, getDoc } from "firebase/firestore";
 
